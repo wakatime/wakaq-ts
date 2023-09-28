@@ -8,7 +8,6 @@
     "test": "test"
   },
   "main": "build/cli.js",
-  "type": "module",
   "bin": {
     "wakaq": "./build/cli.js"
   },

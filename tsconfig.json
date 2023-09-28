@@ -5,13 +5,12 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "target": "es2015",
-    "module": "es2022",
+    "target": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
     "removeComments": true,
     "allowJs": true,
     "checkJs": true,
-    "isolatedModules": true,
     "noUncheckedIndexedAccess": true
   },
   "include": ["src/**/*.ts"]
