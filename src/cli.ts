@@ -2,6 +2,7 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { ChildWorker } from './childWorker';
 import { Scheduler } from './scheduler';
 import { inspect, numPendingEtaTasksInQueue, numPendingTasksInQueue, purgeEtaQueue, purgeQueue } from './utils';
 import { WakaQ } from './wakaq';
@@ -21,7 +22,7 @@ yargs(hideBin(process.argv))
     },
     async (argv) => {
       const app = await import(argv.app);
-      await new WakaWorker(app as WakaQ).start();
+      await new WakaWorker(app as WakaQ, argv.app).start();
     },
   )
   .command(
@@ -80,6 +81,21 @@ yargs(hideBin(process.argv))
       count += await numPendingEtaTasksInQueue(wakaq, queue);
       await purgeEtaQueue(wakaq, queue);
       console.log(`Purged ${count} tasks from ${queue.name}`);
+    },
+  )
+  .command(
+    'child',
+    false,
+    (cmd) => {
+      return cmd.option('app', {
+        describe: 'Import path of your WakaQ instance.',
+        demandOption: true,
+        type: 'string',
+      });
+    },
+    async (argv) => {
+      const app = await import(argv.app);
+      await new ChildWorker(app as WakaQ).start();
     },
   )
   .demandCommand(1)

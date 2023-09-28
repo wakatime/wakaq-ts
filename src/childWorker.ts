@@ -32,7 +32,7 @@ export class ChildWorker {
     try {
       this.logger.debug(`started worker process ${process.pid}`);
 
-      if (this.wakaq.afterWorkerStartedCallback) this.wakaq.afterWorkerStartedCallback();
+      if (this.wakaq.afterWorkerStartedCallback) await this.wakaq.afterWorkerStartedCallback();
 
       this._numTasksProcessed = 0;
       while (!this._stopProcessing) {
@@ -117,19 +117,13 @@ export class ChildWorker {
   async _executeTask(task: Task, args: any[], queue?: WakaQueue) {
     this._sendPingToParent(task.name, queue?.name);
     this.logger.debug(`running with args ${args}`);
-    if (this.wakaq.beforeTaskStartedCallback) this.wakaq.beforeTaskStartedCallback();
+    if (this.wakaq.beforeTaskStartedCallback) this.wakaq.beforeTaskStartedCallback(task);
     try {
-      /*if (this.wakaq.wrapTasksFunction) {
-        this.wakaq.wrapTasksFunction(task.fn)(...args);
-      } else {
-        task.fn(...args);
-      }
-      */
-      task.fn(...args);
+      await task.fn(...args);
     } finally {
       this._sendPingToParent();
       this._numTasksProcessed += 1;
-      if (this.wakaq.afterTaskFinishedCallback) this.wakaq.afterTaskFinishedCallback();
+      if (this.wakaq.afterTaskFinishedCallback) this.wakaq.afterTaskFinishedCallback(task);
     }
   }
 

@@ -11,13 +11,15 @@ import { WakaQ } from './wakaq';
 
 export class WakaWorker {
   public wakaq: WakaQ;
+  public appImportPath: string;
   public children: Child[] = [];
   private _stopProcessing: boolean = false;
   private _pubsub: Redis;
   public logger: Logger;
 
-  constructor(wakaq: WakaQ) {
+  constructor(wakaq: WakaQ, appImportPath: string) {
     this.wakaq = wakaq;
+    this.appImportPath = appImportPath;
     this.logger = setupLogging(this.wakaq);
     this.wakaq.logger = this.logger;
     this._pubsub = this.wakaq.broker.duplicate();
@@ -77,7 +79,8 @@ export class WakaWorker {
 
   private _forkChild() {
     const t = this;
-    const process = fork(__filename, ['child'], { serialization: 'advanced' });
+    this.logger.info(`fork("${__filename}", "child")`);
+    const process = fork(__filename, ['child', '--app', this.appImportPath], { serialization: 'advanced' });
     const child = new Child(this.wakaq, process);
     process.on('exit', (code: number, signal: string) => {
       t._onChildExited(child, code, signal);

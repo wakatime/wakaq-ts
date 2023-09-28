@@ -40,10 +40,9 @@ export class WakaQ {
   public currentTask?: Task;
   public brokerKeys: string[];
 
-  public afterWorkerStartedCallback?: () => void;
-  public beforeTaskStartedCallback?: () => void;
-  public afterTaskFinishedCallback?: () => void;
-  // public wrapTasksFunction?: ((...arg0: any[]) => Promise<void>) => void;
+  public afterWorkerStartedCallback?: () => Promise<void>;
+  public beforeTaskStartedCallback?: (task: Task) => Promise<void>;
+  public afterTaskFinishedCallback?: (task: Task) => Promise<void>;
 
   public broadcastKey = 'wakaq-broadcast';
 
@@ -70,10 +69,9 @@ export class WakaQ {
     schedulerLogFile: string | undefined = undefined,
     workerLogLevel: string | undefined = undefined,
     schedulerLogLevel: string | undefined = undefined,
-    afterWorkerStartedCallback: (() => void) | undefined = undefined,
-    beforeTaskStartedCallback: (() => void) | undefined = undefined,
-    afterTaskFinishedCallback: (() => void) | undefined = undefined,
-    // wrapTasksFunction?: ((...arg0: any[]) => Promise<void>) => void,
+    afterWorkerStartedCallback?: () => Promise<void>,
+    beforeTaskStartedCallback?: (task: Task) => Promise<void>,
+    afterTaskFinishedCallback?: (task: Task) => Promise<void>,
   ) {
     const lowestPriority = Math.max(
       ...queues.map((q) => {
@@ -138,7 +136,12 @@ export class WakaQ {
     });
   }
 
-  public registerTask(
+  /*
+  Task decorator.
+  
+  Wrap an async function with this to register it as a task.
+  */
+  public task(
     fn: (...arg0: any[]) => Promise<void>,
     queue?: WakaQueue | string,
     maxRetries?: number,
@@ -151,45 +154,20 @@ export class WakaQ {
     return task.fn;
   }
 
-  /*
-    task(fn=None, queue=None, max_retries=None, soft_timeout=None, hard_timeout=None) {
-        def wrap(f):
-            t = Task(
-                fn=f,
-                wakaq=this,
-                queue=queue,
-                max_retries=max_retries,
-                soft_timeout=soft_timeout,
-                hard_timeout=hard_timeout,
-            )
-            if t.name in this.tasks:
-                raise Exception(f"Duplicate task name: {t.name}")
-            this.tasks[t.name] = t
-            return t.fn
+  public afterWorkerStarted(callback: () => Promise<void>) {
+    this.afterWorkerStartedCallback = callback;
+    return callback;
+  }
 
-        return wrap(fn) if fn else wrap
-    }
+  public beforeTaskStarted(callback: (task: Task) => Promise<void>) {
+    this.beforeTaskStartedCallback = callback;
+    return callback;
+  }
 
-    after_worker_started(this, callback) {
-        this.after_worker_started_callback = callback
-        return callback
-    }
-
-    before_task_started(this, callback) {
-        this.before_task_started_callback = callback
-        return callback
-    }
-
-    after_task_finished(this, callback) {
-        this.after_task_finished_callback = callback
-        return callback
-    }
-
-    wrap_tasks_with(this, callback) {
-        this.wrap_tasks_function = callback
-        return callback
-    }
-    */
+  public afterTaskFinished(callback: (task: Task) => Promise<void>) {
+    this.afterTaskFinishedCallback = callback;
+    return callback;
+  }
 
   _validateQueueNames(queueNames: string[]): string[] {
     queueNames.forEach((queueName) => {
