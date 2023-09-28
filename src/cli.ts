@@ -85,7 +85,7 @@ yargs(hideBin(process.argv))
   )
   .command(
     'child',
-    false,
+    false, // hidden command used internally to fork child worker processes
     (cmd) => {
       return cmd.option('app', {
         describe: 'Import path of your WakaQ instance.',
