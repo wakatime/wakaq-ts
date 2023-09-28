@@ -9,6 +9,8 @@
     "module": "es2022",
     "moduleResolution": "node",
     "removeComments": true,
+    "allowJs": true,
+    "checkJs": true,
     "isolatedModules": true,
     "noUncheckedIndexedAccess": true
   },
