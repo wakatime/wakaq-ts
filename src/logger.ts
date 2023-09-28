@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { createLogger, format, transports, stream } from 'winston';
+import { createLogger, format, transports } from 'winston';
 import { WakaQ } from './wakaq';
 
 export enum Level {

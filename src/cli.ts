@@ -2,10 +2,10 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { WakaQ } from './wakaq';
-import { WakaWorker } from './worker';
 import { Scheduler } from './scheduler';
 import { inspect, numPendingEtaTasksInQueue, numPendingTasksInQueue, purgeEtaQueue, purgeQueue } from './utils';
+import { WakaQ } from './wakaq';
+import { WakaWorker } from './worker';
 
 yargs(hideBin(process.argv))
   .usage('Usage: $0 <command> [options]')

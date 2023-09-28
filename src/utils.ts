@@ -1,8 +1,8 @@
+import { Duration } from 'ts-duration';
 import { WakaQError } from './exceptions';
 import { WakaQueue } from './queue';
 import { deserialize, serialize } from './serializer';
 import { type WakaQ } from './wakaq';
-import { Duration } from 'ts-duration';
 
 export interface QueuesInfo {
   queues: Map<string, QueuesInfoQueue>;

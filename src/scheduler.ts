@@ -1,9 +1,9 @@
-import { CronTask } from './cronTask';
-import { WakaQ } from './wakaq';
-import { type Logger } from 'winston';
-import { setupLogging } from './logger';
-import { WakaQError } from './exceptions';
 import { Duration } from 'ts-duration';
+import { type Logger } from 'winston';
+import { CronTask } from './cronTask';
+import { WakaQError } from './exceptions';
+import { setupLogging } from './logger';
+import { WakaQ } from './wakaq';
 
 export class Scheduler {
   public wakaq: WakaQ;

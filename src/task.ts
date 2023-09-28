@@ -1,7 +1,7 @@
+import { Duration } from 'ts-duration';
 import { WakaQError } from './exceptions';
 import { WakaQueue } from './queue';
 import { WakaQ } from './wakaq';
-import { Duration } from 'ts-duration';
 
 export class Task {
   public name: string;
