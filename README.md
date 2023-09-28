@@ -1,5 +1,7 @@
 # ![logo](https://raw.githubusercontent.com/wakatime/wakaq/main/wakatime-logo.png "WakaQ") WakaQ
+
 Background task queue for TypeScript backed by Redis, a super minimal Celery.
+
 For the original Python version, see [WakaQ for Python][wakaq python].
 
 ## Features
