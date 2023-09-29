@@ -1,8 +1,8 @@
 import { Duration } from 'ts-duration';
-import { WakaQError } from './exceptions';
-import { WakaQueue } from './queue';
-import { deserialize, serialize } from './serializer';
-import { type WakaQ } from './wakaq';
+import { WakaQError } from './exceptions.js';
+import { WakaQueue } from './queue.js';
+import { deserialize, serialize } from './serializer.js';
+import { type WakaQ } from './wakaq.js';
 
 export interface QueuesInfo {
   queues: Map<string, QueuesInfoQueue>;
@@ -48,7 +48,7 @@ export const pendingTasksInQueue = async (wakaq: WakaQ, queue?: WakaQueue | stri
   }
   if (!queue) return [];
 
-  const tasks = await wakaq.broker.lrange(queue.brokerKey, 0, limit - 1);
+  const tasks: string[] = await wakaq.broker.lrange(queue.brokerKey, 0, limit - 1);
   return tasks.map((task) => serialize(task));
 };
 

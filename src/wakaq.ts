@@ -1,14 +1,14 @@
-import Redis, { Callback, Result } from 'ioredis';
+import { Callback, Redis, Result } from 'ioredis';
 import * as os from 'os';
 import { Duration } from 'ts-duration';
 import { type Logger } from 'winston';
-import { ZRANGEPOP } from './constants';
-import { CronTask } from './cronTask';
-import { WakaQError } from './exceptions';
-import { Level } from './logger';
-import { WakaQueue } from './queue';
-import { serialize } from './serializer';
-import { Task } from './task';
+import { ZRANGEPOP } from './constants.js';
+import { CronTask } from './cronTask.js';
+import { WakaQError } from './exceptions.js';
+import { Level } from './logger.js';
+import { WakaQueue } from './queue.js';
+import { serialize } from './serializer.js';
+import { Task } from './task.js';
 
 declare module 'ioredis' {
   interface RedisCommander<Context> {

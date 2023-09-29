@@ -2,11 +2,11 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { ChildWorker } from './childWorker';
-import { Scheduler } from './scheduler';
-import { inspect, numPendingEtaTasksInQueue, numPendingTasksInQueue, purgeEtaQueue, purgeQueue } from './utils';
-import { WakaQ } from './wakaq';
-import { WakaWorker } from './worker';
+import { ChildWorker } from './childWorker.js';
+import { Scheduler } from './scheduler.js';
+import { inspect, numPendingEtaTasksInQueue, numPendingTasksInQueue, purgeEtaQueue, purgeQueue } from './utils.js';
+import { WakaQ } from './wakaq.js';
+import { WakaWorker } from './worker.js';
 
 yargs(hideBin(process.argv))
   .usage('Usage: $0 <command> [options]')

@@ -1,7 +1,7 @@
 import { Duration } from 'ts-duration';
-import { WakaQError } from './exceptions';
-import { WakaQueue } from './queue';
-import { WakaQ } from './wakaq';
+import { WakaQError } from './exceptions.js';
+import { WakaQueue } from './queue.js';
+import { WakaQ } from './wakaq.js';
 
 export class Task {
   public name: string;

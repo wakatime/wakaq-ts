@@ -1,10 +1,10 @@
 import { type Logger } from 'winston';
-import { SoftTimeout } from './exceptions';
-import { setupLogging } from './logger';
-import { WakaQueue } from './queue';
-import { deserialize } from './serializer';
-import { Task } from './task';
-import { WakaQ } from './wakaq';
+import { SoftTimeout } from './exceptions.js';
+import { setupLogging } from './logger.js';
+import { WakaQueue } from './queue.js';
+import { deserialize } from './serializer.js';
+import { Task } from './task.js';
+import { WakaQ } from './wakaq.js';
 
 export class ChildWorker {
   public wakaq: WakaQ;

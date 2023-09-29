@@ -1,5 +1,5 @@
 import { Duration } from 'ts-duration';
-import { WakaQError } from './exceptions';
+import { WakaQError } from './exceptions.js';
 
 export class WakaQueue {
   public name: string;

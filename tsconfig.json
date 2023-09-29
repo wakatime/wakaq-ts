@@ -4,14 +4,13 @@
     "outDir": "build",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
     "removeComments": true,
     "allowJs": true,
     "checkJs": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/index.mts"]
 }

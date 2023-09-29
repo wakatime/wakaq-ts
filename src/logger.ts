@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { createLogger, format, transports } from 'winston';
-import { WakaQ } from './wakaq';
+import { WakaQ } from './wakaq.js';
 
 export enum Level {
   INFO = 'info',

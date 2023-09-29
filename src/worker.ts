@@ -1,13 +1,13 @@
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { fork } from 'node:child_process';
 import * as net from 'node:net';
 import process from 'node:process';
 import { Duration } from 'ts-duration';
 import { type Logger } from 'winston';
-import { Child } from './child';
-import { setupLogging } from './logger';
-import { deserialize } from './serializer';
-import { WakaQ } from './wakaq';
+import { Child } from './child.js';
+import { setupLogging } from './logger.js';
+import { deserialize } from './serializer.js';
+import { WakaQ } from './wakaq.js';
 
 export class WakaWorker {
   public wakaq: WakaQ;

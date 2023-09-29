@@ -1,8 +1,8 @@
 import { type ChildProcess } from 'node:child_process';
 import { Duration } from 'ts-duration';
-import { WakaQueue } from './queue';
-import { Task } from './task';
-import { WakaQ } from './wakaq';
+import { WakaQueue } from './queue.js';
+import { Task } from './task.js';
+import { WakaQ } from './wakaq.js';
 
 export class Child {
   public process: ChildProcess;

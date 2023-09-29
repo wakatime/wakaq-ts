@@ -7,9 +7,13 @@
     "prepare": "tsc",
     "test": "test"
   },
-  "main": "build/cli.js",
+  "exports": {
+    ".": {
+      "import": "./build/index.mjs"
+    }
+  },
   "bin": {
-    "wakaq": "./build/cli.js"
+    "wakaq": "./build/index.mjs"
   },
   "repository": {
     "type": "git",
@@ -30,8 +34,9 @@
     "url": "https://github.com/wakatime/wakaq-ts/issues"
   },
   "homepage": "https://github.com/wakatime/wakaq-ts#readme",
+  "type": "module",
   "engines": {
-    "node": ">=11.7.0"
+    "node": ">=12"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",

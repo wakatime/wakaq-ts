@@ -1,6 +1,6 @@
 import { parseExpression, type CronExpression } from 'cron-parser';
-import { WakaQError } from './exceptions';
-import { WakaQueue } from './queue';
+import { WakaQError } from './exceptions.js';
+import { WakaQueue } from './queue.js';
 
 export class CronTask {
   public schedule: string;
