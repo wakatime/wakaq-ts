@@ -21,8 +21,8 @@ yargs(hideBin(process.argv))
       });
     },
     async (argv) => {
-      const app = await import(argv.app);
-      await new WakaWorker(app as WakaQ, argv.app).start();
+      const module = (await import(argv.app)) as { wakaq: WakaQ };
+      await new WakaWorker(module.wakaq, argv.app).start();
     },
   )
   .command(
@@ -36,8 +36,8 @@ yargs(hideBin(process.argv))
       });
     },
     async (argv) => {
-      const app = await import(argv.app);
-      await new Scheduler(app as WakaQ).start();
+      const module = (await import(argv.app)) as { wakaq: WakaQ };
+      await new Scheduler(module.wakaq).start();
     },
   )
   .command(
@@ -51,8 +51,8 @@ yargs(hideBin(process.argv))
       });
     },
     async (argv) => {
-      const app = await import(argv.app);
-      console.log(JSON.stringify(inspect(app as WakaQ)));
+      const module = (await import(argv.app)) as { wakaq: WakaQ };
+      console.log(JSON.stringify(inspect(module.wakaq)));
     },
   )
   .command(
@@ -72,8 +72,8 @@ yargs(hideBin(process.argv))
         });
     },
     async (argv) => {
-      const app = await import(argv.app);
-      const wakaq = app as WakaQ;
+      const module = (await import(argv.app)) as { wakaq: WakaQ };
+      const wakaq = module.wakaq;
       const queue = wakaq.queuesByName.get(argv.queue);
       if (!queue) throw new Error(`Queue not found: ${argv.queue}`);
       let count = await numPendingTasksInQueue(wakaq, queue);
@@ -94,8 +94,8 @@ yargs(hideBin(process.argv))
       });
     },
     async (argv) => {
-      const app = await import(argv.app);
-      await new ChildWorker(app as WakaQ).start();
+      const module = (await import(argv.app)) as { wakaq: WakaQ };
+      await new ChildWorker(module.wakaq).start();
     },
   )
   .demandCommand(1)
