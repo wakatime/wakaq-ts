@@ -12,7 +12,7 @@ For the original Python version, see [WakaQ for Python][wakaq python].
 - [Broadcast][broadcast] a task to all workers
 - Task [soft][soft timeout] and [hard][hard timeout] timeout limits
 - Optionally retry tasks on soft timeout
-- Combat memory leaks with `maxTasksPerWorker`
+- Combat memory leaks with `maxMemPercent` or `maxTasksPerWorker`
 - Super minimal
 
 Want more features like rate limiting, task deduplication, etc? Too bad, feature PRs are not accepted. Maximal features belong in your app’s worker tasks.

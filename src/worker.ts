@@ -2,6 +2,8 @@ import { Redis } from 'ioredis';
 import { fork } from 'node:child_process';
 import * as net from 'node:net';
 import process from 'node:process';
+import * as os from 'os';
+import pidusage from 'pidusage';
 import { Duration } from 'ts-duration';
 import { type Logger } from 'winston';
 import { Child } from './child.js';
@@ -58,7 +60,7 @@ export class WakaWorker {
 
       while (!this._stopProcessing) {
         this._respawnMissingChildren();
-        this._enqueueReadyEtaTasks();
+        await this._enqueueReadyEtaTasks();
         this._checkChildRuntimes();
         await this.wakaq.sleep(Duration.millisecond(500));
       }
@@ -67,6 +69,7 @@ export class WakaWorker {
         this.logger.info('shutting down...');
         while (this.children.length > 0) {
           this._stopAllChildren();
+          await this._checkChildMemoryUsages();
           this._checkChildRuntimes();
           await this.wakaq.sleep(Duration.millisecond(500));
         }
@@ -134,16 +137,31 @@ export class WakaWorker {
     child.softTimeoutReached = false;
   }
 
-  _enqueueReadyEtaTasks() {
-    this.wakaq.queues.forEach(async (q) => {
-      const results = await this.wakaq.broker.getetatasks(q.brokerEtaKey, String(Math.round(Date.now() / 1000)));
-      results.forEach((result) => {
-        const payload = deserialize(result);
-        const taskName = payload.name;
-        const args = payload.args;
-        this.wakaq.enqueueAtFront(taskName, args, q);
-      });
-    });
+  async _enqueueReadyEtaTasks() {
+    await Promise.all(
+      this.wakaq.queues.map(async (q) => {
+        const results = await this.wakaq.broker.getetatasks(q.brokerEtaKey, String(Math.round(Date.now() / 1000)));
+        await Promise.all(
+          results.map(async (result) => {
+            const payload = deserialize(result);
+            const taskName = payload.name;
+            const args = payload.args;
+            await this.wakaq.enqueueAtFront(taskName, args, q);
+          }),
+        );
+      }),
+    );
+  }
+
+  async _checkChildMemoryUsages() {
+    if (!this.wakaq.maxMemPercent) return;
+    const totalMem = os.totalmem();
+    const percent = ((totalMem - os.freemem()) / totalMem) * 100;
+    if (percent < this.wakaq.maxMemPercent) return;
+    const usages = await Promise.all(this.children.map(async (child) => (await pidusage(child.process.pid ?? 0)).memory || 0));
+    const maxIndex = usages.reduce((iMax, x, i, arr) => (x > (arr[iMax] ?? 0) ? i : iMax), 0);
+    const child = this.children.at(maxIndex);
+    child?.sigterm();
   }
 
   _checkChildRuntimes() {
