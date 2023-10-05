@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc",
     "prepare": "tsc",
+    "publish": "npm publish",
     "version": "npm version --no-git-tag-version",
     "test": "test"
   },
