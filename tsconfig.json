@@ -12,5 +12,5 @@
     "checkJs": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*.ts", "src/index.mts"]
+  "include": ["src/**/*.ts", "src/index.ts"]
 }
