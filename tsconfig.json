@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build",
+    "outDir": "./dist",
+    "declaration": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "nodenext",
+    "module": "commonjs",
     "moduleResolution": "nodenext",
+    "target": "es2020",
     "esModuleInterop": true,
     "removeComments": true,
     "allowJs": true,
     "checkJs": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*.ts", "src/index.ts"]
+  "include": ["src/**/*.ts"]
 }
