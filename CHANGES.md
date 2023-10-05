@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.7 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.6...v0.0.7)
+
+#### Bugfix
+
+- Build before publish.
+
 ## 0.0.6 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.5...v0.0.6)
 
 #### Misc
