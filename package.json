@@ -4,8 +4,7 @@
   "description": "Background task queue for Node backed by Redis, a super minimal Celery",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc",
-    "prepare": "tsc",
+    "prepare": "tsc -d",
     "publish": "npm publish",
     "version": "npm version --no-git-tag-version",
     "test": "test"
