@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.6 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.5...v0.0.6)
+
+#### Misc
+
+- Setup as commonjs library.
+
 ## 0.0.5 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.4...0.0.5)
 
 #### Bugfix
