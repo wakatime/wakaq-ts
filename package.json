@@ -2,7 +2,8 @@
   "name": "wakaq",
   "version": "0.0.3",
   "description": "Background task queue for Node backed by Redis, a super minimal Celery",
-  "main": "build/index.js",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
   "scripts": {
     "prepare": "tsc -d",
     "publish": "npm publish",
