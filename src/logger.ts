@@ -5,6 +5,8 @@ import { WakaQ } from './wakaq.js';
 export enum Level {
   INFO = 'info',
   ERROR = 'error',
+  WARN = 'warn',
+  DEBUG = 'debug',
 }
 
 export const setupLogging = (wakaq: WakaQ, isChild: boolean = false, isScheduler: boolean = false) => {
@@ -33,7 +35,6 @@ export const setupLogging = (wakaq: WakaQ, isChild: boolean = false, isScheduler
         filename: logFile,
         level: level,
         handleExceptions: true,
-        maxFiles: 5, // You might need to adjust these settings
         maxsize: 5242880, // 5MB
       }),
     );

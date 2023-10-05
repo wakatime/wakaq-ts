@@ -19,12 +19,70 @@ Want more features like rate limiting, task deduplication, etc? Too bad, feature
 
 ## Installing
 
-    npm i -g wakaq
+    npm i wakaq
 
 ## Using
 
+`app.ts`
+
 ```TypeScript
-coming soon
+import { WakaQ, WakaQWorker } from 'wakaq';
+export const wakaq = new WakaQ();
+```
+
+Add these scripts to your `package.json`:
+
+```JSON
+{
+  "scripts": {
+    "worker": "tsx scripts/wakaqWorker.ts",
+    "child": "tsx scripts/wakaqChild.ts",
+    "info": "tsx scripts/wakaqInfo.ts",
+    "purge": "tsx scripts/wakaqPurge.ts"
+  }
+}
+```
+
+Create these files in your `scripts` folder:
+
+`scripts/wakaqWorker.ts`
+
+```TypeScript
+import { WakaQWorker } from 'wakaq';
+import { wakaq } from '../app.js';
+(new WakaQWorker(wakaq, "npm run child")).start();
+```
+
+`scripts/wakaqChild.ts`
+
+```TypeScript
+import { WakaQChildWorker } from 'wakaq';
+import { wakaq } from '../app.js';
+(new WakaQChildWorker(wakaq)).start();
+```
+
+`scripts/wakaqInfo.ts`
+
+```TypeScript
+import { inspect } from 'wakaq';
+import { wakaq } from '../app.js';
+console.log(JSON.stringify(inspect(module.wakaq), null, 2));
+```
+
+`scripts/wakaqPurge.ts`
+
+```TypeScript
+import { numPendingTasksInQueue, numPendingEtaTasksInQueue, purgeQueue, purgeEtaQueue } from 'wakaq';
+import { wakaq } from '../app.js';
+
+const queueName = process.argv.slice(2);
+const queue = wakaq.queuesByName.get(queueName);
+if (!queue) throw new Error(`Queue not found: ${queueName}`);
+let count = await numPendingTasksInQueue(wakaq, queue);
+await purgeQueue(wakaq, queue);
+count += await numPendingEtaTasksInQueue(wakaq, queue);
+await purgeEtaQueue(wakaq, queue);
+console.log(`Purged ${count} tasks from ${queue.name}`);
 ```
 
 ## Deploying
@@ -48,7 +106,7 @@ Description=WakaQ Worker Service
 
 [Service]
 WorkingDirectory=/opt/yourapp
-ExecStart=wakaq worker --app=path/to/your/wakaq.js
+ExecStart=npm run worker
 RemainAfterExit=no
 Restart=always
 RestartSec=30s

@@ -6,7 +6,7 @@ import { deserialize } from './serializer.js';
 import { Task } from './task.js';
 import { WakaQ } from './wakaq.js';
 
-export class ChildWorker {
+export class WakaQChildWorker {
   public wakaq: WakaQ;
   private _stopProcessing: boolean = false;
   private _numTasksProcessed: number = 0;

@@ -1,6 +1,5 @@
 import { Redis } from 'ioredis';
-import { fork } from 'node:child_process';
-import * as net from 'node:net';
+import { spawn } from 'node:child_process';
 import process from 'node:process';
 import * as os from 'os';
 import pidusage from 'pidusage';
@@ -11,17 +10,17 @@ import { setupLogging } from './logger.js';
 import { deserialize } from './serializer.js';
 import { WakaQ } from './wakaq.js';
 
-export class WakaWorker {
+export class WakaQWorker {
   public wakaq: WakaQ;
-  public appImportPath: string;
+  public childWorkerCommand: string;
   public children: Child[] = [];
   private _stopProcessing: boolean = false;
   private _pubsub: Redis;
   public logger: Logger;
 
-  constructor(wakaq: WakaQ, appImportPath: string) {
+  constructor(wakaq: WakaQ, childWorkerCommand: string) {
     this.wakaq = wakaq;
-    this.appImportPath = appImportPath;
+    this.childWorkerCommand = childWorkerCommand;
     this.logger = setupLogging(this.wakaq);
     this.wakaq.logger = this.logger;
     this._pubsub = this.wakaq.broker.duplicate();
@@ -48,7 +47,7 @@ export class WakaWorker {
 
     // spawn child processes
     for (let i = 0; i < this.wakaq.concurrency; i++) {
-      this._forkChild();
+      this._spawnChild();
     }
     this.logger.info('finished spawning all workers');
 
@@ -80,19 +79,16 @@ export class WakaWorker {
     }
   }
 
-  private _forkChild() {
+  private _spawnChild() {
     const t = this;
-    this.logger.info(`fork("${__filename}", "child")`);
-    const process = fork(__filename, ['child', '--app', this.appImportPath], { serialization: 'advanced' });
+    this.logger.info(`spawning child worker: ${this.childWorkerCommand}`);
+    const process = spawn(this.childWorkerCommand);
     const child = new Child(this.wakaq, process);
-    process.on('exit', (code: number, signal: string) => {
-      t._onChildExited(child, code, signal);
+    process.on('close', (code: number) => {
+      t._onChildExited(child, code);
     });
-    process.on('error', (code: number, signal: string) => {
-      t._onChildExited(child, code, signal);
-    });
-    process.on('message', (message: any, socket: any) => {
-      t._onMessageReceivedFromChild(child, message, socket);
+    process.stdout.on('data', (data: string) => {
+      t._onMessageReceivedFromChild(child, data);
     });
     this.children.push(child);
   }
@@ -114,11 +110,11 @@ export class WakaWorker {
     this._stop();
   }
 
-  private _onChildExited(child: Child, code: number, signal: string) {
+  private _onChildExited(child: Child, code: number) {
     this.children = this.children.filter((c) => c !== child);
   }
 
-  private _onMessageReceivedFromChild(child: Child, message: string, socket: net.Socket | net.Server) {
+  private _onMessageReceivedFromChild(child: Child, message: string) {
     this.logger.debug(`received ping from child process ${child.process.pid}`);
     child.lastPing = Math.round(Date.now() / 1000);
     if (!message) return;
@@ -199,7 +195,7 @@ export class WakaWorker {
     if (this._stopProcessing) return;
     for (let i = this.wakaq.concurrency - this.children.length; i > 0; i--) {
       this.logger.debug('restarting a crashed worker');
-      this._forkChild();
+      this._spawnChild();
     }
   }
 }
