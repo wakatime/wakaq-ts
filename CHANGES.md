@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.3 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.2...0.0.3)
+
+#### Bufix
+
+- Require using as library not cli.
+
 ## 0.0.2 (2022-09-29) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.1...0.0.2)
 
 #### Bufix
