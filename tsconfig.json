@@ -6,7 +6,6 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
-    "moduleResolution": "nodenext",
     "target": "es2020",
     "esModuleInterop": true,
     "removeComments": true,
