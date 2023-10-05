@@ -6,7 +6,6 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "prepare": "tsc -d",
-    "publish": "npm publish",
     "version": "npm version --no-git-tag-version",
     "test": "test"
   },
