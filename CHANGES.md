@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.4 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.3...0.0.4)
+
+#### Misc
+
+- Add types.
+
 ## 0.0.3 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/0.0.2...0.0.3)
 
 #### Bufix
