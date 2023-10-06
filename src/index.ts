@@ -18,4 +18,4 @@ export {
   purgeQueue,
 } from './utils.js';
 export { WakaQ, WakaQParams } from './wakaq.js';
-export { WakaQWorker as WakaWorker } from './worker.js';
+export { WakaQWorker } from './worker.js';
