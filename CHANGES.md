@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.8 (2022-10-06) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.7...v0.0.8)
+
+#### Misc
+
+- Use params object for WakaQ constructor.
+
 ## 0.0.7 (2022-10-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.6...v0.0.7)
 
 #### Bugfix
