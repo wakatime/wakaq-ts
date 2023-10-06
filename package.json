@@ -34,15 +34,15 @@
     "node": ">=12"
   },
   "devDependencies": {
-    "@types/eslint": "^8.44.2",
-    "@types/node": "^20.5.3",
+    "@types/eslint": "^8.44.3",
+    "@types/node": "^20.8.2",
     "@types/pidusage": "^2.0.3",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "6.4.1",
-    "@typescript-eslint/parser": "6.4.1",
-    "eslint": "^8.47.0",
-    "prettier": "^3.0.2",
-    "typescript": "^5.1.6"
+    "@typescript-eslint/eslint-plugin": "6.7.4",
+    "@typescript-eslint/parser": "6.7.4",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "cron-parser": "^4.9.0",
