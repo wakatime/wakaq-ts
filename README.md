@@ -50,7 +50,7 @@ Create these files in your `scripts` folder:
 ```TypeScript
 import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
-(new WakaQWorker(wakaq, "npm run child")).start();
+await new WakaQWorker(wakaq, "npm run child").start();
 ```
 
 `scripts/wakaqChild.ts`
@@ -58,7 +58,7 @@ import { wakaq } from '../app.js';
 ```TypeScript
 import { WakaQChildWorker } from 'wakaq';
 import { wakaq } from '../app.js';
-(new WakaQChildWorker(wakaq)).start();
+await new WakaQChildWorker(wakaq).start();
 ```
 
 `scripts/wakaqInfo.ts`
@@ -66,7 +66,7 @@ import { wakaq } from '../app.js';
 ```TypeScript
 import { inspect } from 'wakaq';
 import { wakaq } from '../app.js';
-console.log(JSON.stringify(inspect(module.wakaq), null, 2));
+console.log(JSON.stringify(await inspect(wakaq), null, 2));
 ```
 
 `scripts/wakaqPurge.ts`
@@ -75,9 +75,11 @@ console.log(JSON.stringify(inspect(module.wakaq), null, 2));
 import { numPendingTasksInQueue, numPendingEtaTasksInQueue, purgeQueue, purgeEtaQueue } from 'wakaq';
 import { wakaq } from '../app.js';
 
-const queueName = process.argv.slice(2);
-const queue = wakaq.queuesByName.get(queueName);
-if (!queue) throw new Error(`Queue not found: ${queueName}`);
+const queueName = process.argv.slice(2)[0];
+const queue = wakaq.queuesByName.get(queueName ?? '');
+if (!queue) {
+  throw new Error(`Queue not found: ${queueName}`);
+}
 let count = await numPendingTasksInQueue(wakaq, queue);
 await purgeQueue(wakaq, queue);
 count += await numPendingEtaTasksInQueue(wakaq, queue);
