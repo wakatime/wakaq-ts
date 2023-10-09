@@ -69,6 +69,7 @@ export class WakaQ {
   public workerLogLevel: Level;
   public schedulerLogLevel: Level;
   public logger?: Logger;
+  private _pubsub?: Redis;
 
   public currentTask?: Task;
   public brokerKeys: string[];
@@ -171,6 +172,11 @@ export class WakaQ {
     });
   }
 
+  public dispose() {
+    this.broker.disconnect();
+    this._pubsub?.disconnect();
+  }
+
   /*
   Task decorator.
   
@@ -232,7 +238,7 @@ export class WakaQ {
 
   public async broadcast(taskName: string, args: any[]): Promise<number> {
     const payload = serialize({ name: taskName, args: args });
-    return await this.broker.publish(this.broadcastKey, payload);
+    return await this.pubsub.publish(this.broadcastKey, payload);
   }
 
   public async sleep(duration: Duration) {
@@ -251,6 +257,11 @@ export class WakaQ {
   get defaultQueue(): WakaQueue {
     if (this.queues.length === 0) throw new WakaQError('Missing queues.');
     return this.queues[-1] as WakaQueue;
+  }
+
+  get pubsub(): Redis {
+    if (!this._pubsub) this._pubsub = this.broker.duplicate();
+    return this._pubsub;
   }
 
   _formatConcurrency(concurrency: number | string | undefined): number {

@@ -50,7 +50,7 @@ Create these files in your `scripts` folder:
 ```TypeScript
 import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
-await new WakaQWorker(wakaq, "npm run child").start();
+void new WakaQWorker(wakaq, "npm run child").start();
 ```
 
 `scripts/wakaqChild.ts`
@@ -58,7 +58,7 @@ await new WakaQWorker(wakaq, "npm run child").start();
 ```TypeScript
 import { WakaQChildWorker } from 'wakaq';
 import { wakaq } from '../app.js';
-await new WakaQChildWorker(wakaq).start();
+void new WakaQChildWorker(wakaq).start();
 ```
 
 `scripts/wakaqInfo.ts`
@@ -67,6 +67,7 @@ await new WakaQChildWorker(wakaq).start();
 import { inspect } from 'wakaq';
 import { wakaq } from '../app.js';
 console.log(JSON.stringify(await inspect(wakaq), null, 2));
+wakaq.dispose();
 ```
 
 `scripts/wakaqPurge.ts`
@@ -85,6 +86,7 @@ await purgeQueue(wakaq, queue);
 count += await numPendingEtaTasksInQueue(wakaq, queue);
 await purgeEtaQueue(wakaq, queue);
 console.log(`Purged ${count} tasks from ${queue.name}`);
+wakaq.dispose();
 ```
 
 ## Deploying

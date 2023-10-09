@@ -15,7 +15,6 @@ export class WakaQWorker {
   public childWorkerCommand: string;
   public children: Child[] = [];
   private _stopProcessing: boolean = false;
-  private _pubsub: Redis;
   public logger: Logger;
 
   constructor(wakaq: WakaQ, childWorkerCommand: string) {
@@ -23,7 +22,6 @@ export class WakaQWorker {
     this.childWorkerCommand = childWorkerCommand;
     this.logger = setupLogging(this.wakaq);
     this.wakaq.logger = this.logger;
-    this._pubsub = this.wakaq.broker.duplicate();
   }
 
   async start() {
@@ -52,10 +50,10 @@ export class WakaQWorker {
     this.logger.info('finished spawning all workers');
 
     try {
-      this._pubsub.subscribe(this.wakaq.broadcastKey, (err) => {
+      this.wakaq.pubsub.subscribe(this.wakaq.broadcastKey, (err) => {
         if (err) this.logger.error(`Failed to subscribe to broadcast tasks: ${err.message}`);
       });
-      this._pubsub.on('message', this._handleBroadcastTask);
+      this.wakaq.pubsub.on('message', this._handleBroadcastTask);
 
       while (!this._stopProcessing) {
         this._respawnMissingChildren();
@@ -98,6 +96,7 @@ export class WakaQWorker {
     this.children.forEach((child) => {
       child.sigterm();
     });
+    this.wakaq.dispose();
   }
 
   private _stopAllChildren() {

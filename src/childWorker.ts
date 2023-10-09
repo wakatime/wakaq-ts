@@ -90,6 +90,7 @@ export class WakaQChildWorker {
 
   private _stop() {
     this._stopProcessing = true;
+    this.wakaq.dispose();
   }
 
   private _onSoftTimeout() {
