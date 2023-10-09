@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.9 (2022-10-09) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.8...v0.0.9)
+
+#### Bugfix
+
+- New dispose method to cleanup Redis connections.
+
 ## 0.0.8 (2022-10-06) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.7...v0.0.8)
 
 #### Misc
