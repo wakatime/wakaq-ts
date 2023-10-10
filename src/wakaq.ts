@@ -178,9 +178,10 @@ export class WakaQ {
   }
 
   /*
-  Task decorator.
-  
+  Task wrapper.
+
   Wrap an async function with this to register it as a task.
+  Returns the new Task with methods delay() and broadcast().
   */
   public task(
     fn: (...arg0: any[]) => Promise<void>,
@@ -188,11 +189,11 @@ export class WakaQ {
     maxRetries?: number,
     softTimeout?: Duration,
     hardTimeout?: Duration,
-  ) {
+  ): Task {
     const task = new Task(this, fn, queue, softTimeout, hardTimeout, maxRetries);
     if (this.tasks.has(task.name)) throw new WakaQError(`Duplicate task name: ${task.name}`);
     this.tasks.set(task.name, task);
-    return task.fn;
+    return task;
   }
 
   public afterWorkerStarted(callback: () => Promise<void>) {
