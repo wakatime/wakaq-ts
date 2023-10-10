@@ -24,7 +24,7 @@ function replacer(key: string, v: any): string | number | boolean | null {
       }
       return v;
     case 'string':
-      return JSON.stringify(v);
+      return v;
     case 'undefined':
       return null;
   }
