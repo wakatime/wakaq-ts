@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { createLogger, format, transports } from 'winston';
 import { WakaQ } from './wakaq.js';
 
@@ -27,8 +26,11 @@ export const setupLogging = (wakaq: WakaQ, isChild: boolean = false, isScheduler
   const logFile = isScheduler ? wakaq.schedulerLogFile : wakaq.workerLogFile;
 
   if (isChild || !logFile) {
-    const s = fs.createWriteStream('/dev/null');
-    logger.add(new transports.Stream({ level: level, stream: s }));
+    logger.add(
+      new transports.Console({
+        format: format.simple(),
+      }),
+    );
   } else {
     logger.add(
       new transports.File({

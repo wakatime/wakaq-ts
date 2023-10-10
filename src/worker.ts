@@ -1,4 +1,3 @@
-import { Redis } from 'ioredis';
 import { spawn } from 'node:child_process';
 import process from 'node:process';
 import * as os from 'os';
@@ -13,13 +12,16 @@ import { WakaQ } from './wakaq.js';
 export class WakaQWorker {
   public wakaq: WakaQ;
   public childWorkerCommand: string;
+  public childWorkerArgs: string[];
   public children: Child[] = [];
   private _stopProcessing: boolean = false;
   public logger: Logger;
 
-  constructor(wakaq: WakaQ, childWorkerCommand: string) {
+  constructor(wakaq: WakaQ, childWorkerCommand: string[]) {
     this.wakaq = wakaq;
-    this.childWorkerCommand = childWorkerCommand;
+    if (childWorkerCommand.length == 0) throw Error('Missing child worker command.');
+    this.childWorkerCommand = childWorkerCommand.shift() ?? '';
+    this.childWorkerArgs = childWorkerCommand;
     this.logger = setupLogging(this.wakaq);
     this.wakaq.logger = this.logger;
   }
@@ -81,13 +83,13 @@ export class WakaQWorker {
 
   private _spawnChild() {
     const t = this;
-    this.logger.info(`spawning child worker: ${this.childWorkerCommand}`);
-    const process = spawn(this.childWorkerCommand);
+    this.logger.info(`spawning child worker: ${this.childWorkerCommand} ${this.childWorkerArgs.join(' ')}`);
+    const process = spawn(this.childWorkerCommand, this.childWorkerArgs);
     const child = new Child(this.wakaq, process);
     process.on('close', (code: number) => {
       t._onChildExited(child, code);
     });
-    process.stdout.on('data', (data: string) => {
+    process.stdout.on('data', (data: string | Buffer) => {
       t._onMessageReceivedFromChild(child, data);
     });
     this.children.push(child);
@@ -115,10 +117,11 @@ export class WakaQWorker {
     this.children = this.children.filter((c) => c !== child);
   }
 
-  private _onMessageReceivedFromChild(child: Child, message: string) {
+  private _onMessageReceivedFromChild(child: Child, message: string | Buffer) {
     this.logger.debug(`received ping from child process ${child.process.pid}`);
     child.lastPing = Math.round(Date.now() / 1000);
     if (!message) return;
+    if (message instanceof Buffer) message = message.toString();
     const parts = message.split(':', 1);
     if (parts.length == 2) {
       const taskName = parts[0];

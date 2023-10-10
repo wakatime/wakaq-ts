@@ -86,7 +86,7 @@ export class WakaQ {
     const host = params?.host ?? 'localhost';
     const port = params?.port ?? 6379;
     const db = params?.db ?? 0;
-    const concurrency = params?.concurrency ?? 0;
+    const concurrency = params?.concurrency ?? 1;
     const excludeQueues = params?.excludeQueues ?? [];
     const maxRetries = params?.maxRetries ?? 0;
     const maxMemPercent = params?.maxMemPercent ?? 0;
@@ -224,7 +224,8 @@ export class WakaQ {
     return queueNames;
   }
 
-  _asDuration(obj?: Duration | number, def?: number): Duration {
+  _asDuration(obj?: Duration | { seconds: number } | number, def?: number): Duration {
+    if (obj instanceof Duration) return obj;
     if (typeof obj === 'object' && typeof obj.seconds === 'number') return obj as Duration;
     if (typeof obj === 'number') return Duration.second(obj);
     return Duration.second(def ?? 0);

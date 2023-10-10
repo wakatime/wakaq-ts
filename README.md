@@ -50,7 +50,7 @@ Create these files in your `scripts` folder:
 ```TypeScript
 import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
-await new WakaQWorker(wakaq, "npm run child").start();
+await new WakaQWorker(wakaq, ['npm', 'run', 'child']).start();
 wakaq.dispose();
 ```
 
