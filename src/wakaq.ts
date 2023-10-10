@@ -257,7 +257,7 @@ export class WakaQ {
 
   get defaultQueue(): WakaQueue {
     if (this.queues.length === 0) throw new WakaQError('Missing queues.');
-    return this.queues[-1] as WakaQueue;
+    return this.queues[this.queues.length - 1] as WakaQueue;
   }
 
   get pubsub(): Redis {
