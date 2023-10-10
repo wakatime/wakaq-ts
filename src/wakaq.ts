@@ -184,7 +184,7 @@ export class WakaQ {
   Returns the new Task with methods delay() and broadcast().
   */
   public task(
-    fn: (...arg0: any[]) => Promise<void>,
+    fn: (...arg0: unknown[]) => Promise<void>,
     queue?: WakaQueue | string,
     maxRetries?: number,
     softTimeout?: Duration,

@@ -5,7 +5,7 @@ import { WakaQ } from './wakaq.js';
 
 export class Task {
   public name: string;
-  public fn: any;
+  public fn: (...args: unknown[]) => Promise<void>;
   public wakaq: WakaQ;
   public queue?: WakaQueue;
   public softTimeout?: Duration;
@@ -14,7 +14,7 @@ export class Task {
 
   constructor(
     wakaq: WakaQ,
-    fn: (...args: any[]) => any,
+    fn: (...args: unknown[]) => Promise<void>,
     queue?: WakaQueue | string,
     softTimeout?: Duration,
     hardTimeout?: Duration,
