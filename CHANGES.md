@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.10 (2022-10-10) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.9...v0.0.10)
+
+#### Bugfix
+
+- Use task wrapper instead of decorator.
+
 ## 0.0.9 (2022-10-09) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.8...v0.0.9)
 
 #### Bugfix
