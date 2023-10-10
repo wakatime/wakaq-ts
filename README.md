@@ -51,7 +51,6 @@ Create these files in your `scripts` folder:
 import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
 await new WakaQWorker(wakaq, ['npm', 'run', 'child']).start();
-wakaq.dispose();
 ```
 
 `scripts/wakaqChild.ts`
@@ -60,7 +59,6 @@ wakaq.dispose();
 import { WakaQChildWorker } from 'wakaq';
 import { wakaq } from '../app.js';
 await new WakaQChildWorker(wakaq).start();
-wakaq.dispose();
 ```
 
 `scripts/wakaqInfo.ts`
