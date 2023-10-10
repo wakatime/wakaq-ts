@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.11 (2022-10-10) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.10...v0.0.11)
+
+#### Bugfix
+
+- Fix type of expected function.
+
 ## 0.0.10 (2022-10-10) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.9...v0.0.10)
 
 #### Bugfix
