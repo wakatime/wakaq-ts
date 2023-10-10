@@ -4,8 +4,12 @@ import { WakaQueue } from './queue.js';
 import { deserialize, serialize } from './serializer.js';
 import { type WakaQ } from './wakaq.js';
 
+export interface QueuesInfoMap {
+  [key: string]: QueuesInfoQueue;
+}
+
 export interface QueuesInfo {
-  queues: Map<string, QueuesInfoQueue>;
+  queues: QueuesInfoMap;
   workers: number;
 }
 
@@ -31,13 +35,13 @@ export const inspect = async (wakaq: WakaQ): Promise<QueuesInfo> => {
       };
     }),
   );
+  const queues: QueuesInfoMap = {};
+  results.forEach((q) => {
+    queues[q.name] = q;
+  });
   const workers = await numWorkersConnected(wakaq);
   return {
-    queues: new Map<string, QueuesInfoQueue>(
-      results.map((q) => {
-        return [q.name, q];
-      }),
-    ),
+    queues,
     workers,
   };
 };

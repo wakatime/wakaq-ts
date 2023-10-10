@@ -26,9 +26,9 @@ export class WakaQWorker {
 
   async start() {
     this.logger.info(`concurrency=${this.wakaq.concurrency}`);
-    this.logger.info(`soft_timeout=${this.wakaq.softTimeout}`);
-    this.logger.info(`hard_timeout=${this.wakaq.hardTimeout}`);
-    this.logger.info(`wait_timeout=${this.wakaq.waitTimeout}`);
+    this.logger.info(`soft_timeout=${this.wakaq.softTimeout.seconds}`);
+    this.logger.info(`hard_timeout=${this.wakaq.hardTimeout.seconds}`);
+    this.logger.info(`wait_timeout=${this.wakaq.waitTimeout.seconds}`);
     this.logger.info(`exclude_queues=${this.wakaq.excludeQueues}`);
     this.logger.info(`max_retries=${this.wakaq.maxRetries}`);
     this.logger.info(`max_mem_percent=${this.wakaq.maxMemPercent}`);
@@ -39,9 +39,11 @@ export class WakaQWorker {
     this.logger.info(`scheduler_log_level=${this.wakaq.schedulerLogLevel}`);
     this.logger.info(`starting ${this.wakaq.concurrency} workers...`);
 
-    process.on('SIGINT', this._onExitParent);
-    process.on('SIGTERM', this._onExitParent);
-    process.on('SIGQUIT', this._onExitParent);
+    const _this = this;
+
+    process.on('SIGINT', () => _this._onExitParent());
+    process.on('SIGTERM', () => _this._onExitParent());
+    process.on('SIGQUIT', () => _this._onExitParent());
 
     // spawn child processes
     for (let i = 0; i < this.wakaq.concurrency; i++) {

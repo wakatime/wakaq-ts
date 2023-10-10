@@ -19,11 +19,11 @@ export class WakaQChildWorker {
   }
 
   async start() {
-    const t = this;
+    const _this = this;
 
     process.on('SIGINT', this._ignoreSignal);
-    process.on('SIGTERM', this._stop);
-    process.on('SIGQUIT', this._onSoftTimeout);
+    process.on('SIGTERM', () => _this._stop());
+    process.on('SIGQUIT', () => _this._onSoftTimeout());
 
     setupLogging(this.wakaq, true);
 

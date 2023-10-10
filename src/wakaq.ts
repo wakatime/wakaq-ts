@@ -127,16 +127,22 @@ export class WakaQ {
 
     this.concurrency = this._formatConcurrency(concurrency);
 
-    this.softTimeout = params?.softTimeout instanceof Duration ? params.softTimeout : Duration.second(params?.softTimeout ?? 0);
-    this.hardTimeout = params?.hardTimeout instanceof Duration ? params.hardTimeout : Duration.second(params?.hardTimeout ?? 0);
-    this.waitTimeout = params?.waitTimeout instanceof Duration ? params.waitTimeout : Duration.second(params?.waitTimeout ?? 1);
+    this.softTimeout = this._asDuration(params?.softTimeout, 0);
+    this.hardTimeout = this._asDuration(params?.hardTimeout, 0);
+    this.waitTimeout = this._asDuration(params?.waitTimeout, 1);
 
     if (this.softTimeout && this.softTimeout <= this.waitTimeout)
-      throw new WakaQError(`Soft timeout (${this.softTimeout}) can not be less than or equal to wait timeout (${this.waitTimeout}).`);
+      throw new WakaQError(
+        `Soft timeout (${this.softTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
+      );
     if (this.hardTimeout && this.hardTimeout <= this.waitTimeout)
-      throw new WakaQError(`Hard timeout (${this.hardTimeout}) can not be less than or equal to wait timeout (${this.waitTimeout}).`);
+      throw new WakaQError(
+        `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
+      );
     if (this.softTimeout && this.hardTimeout && this.hardTimeout <= this.softTimeout)
-      throw new WakaQError(`Hard timeout (${this.hardTimeout}) can not be less than or equal to soft timeout (${this.softTimeout}).`);
+      throw new WakaQError(
+        `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to soft timeout (${this.softTimeout.seconds}).`,
+      );
 
     if ((maxMemPercent && maxMemPercent < 1) || maxMemPercent > 99)
       throw new WakaQError(`Max memory percent must be between 1 and 99: ${maxMemPercent}`);
@@ -216,6 +222,12 @@ export class WakaQ {
       if (!this.queuesByName.has(queueName)) throw new WakaQError(`Invalid queue: ${queueName}`);
     });
     return queueNames;
+  }
+
+  _asDuration(obj?: Duration | number, def?: number): Duration {
+    if (typeof obj === 'object' && typeof obj.seconds === 'number') return obj as Duration;
+    if (typeof obj === 'number') return Duration.second(obj);
+    return Duration.second(def ?? 0);
   }
 
   public async enqueueAtFront(taskName: string, args: any[], queue?: WakaQueue | string) {
