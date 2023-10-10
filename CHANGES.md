@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.12 (2022-10-10) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.11...v0.0.12)
+
+#### Bugfix
+
+- Fix returning default queue.
+
 ## 0.0.11 (2022-10-10) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.10...v0.0.11)
 
 #### Bugfix
