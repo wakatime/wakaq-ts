@@ -69,7 +69,7 @@ export class WakaQWorker {
       if (this.children.length > 0) {
         this.logger.info('shutting down...');
         while (this.children.length > 0) {
-          this._stopAllChildren();
+          this._stop();
           await this._checkChildMemoryUsages();
           this._checkChildRuntimes();
           await this.wakaq.sleep(Duration.millisecond(500));
@@ -78,29 +78,38 @@ export class WakaQWorker {
     } catch (error) {
       this.logger.error(error);
       this._stop();
+    } finally {
+      this.wakaq.dispose();
     }
   }
 
   private _spawnChild() {
     const t = this;
     this.logger.info(`spawning child worker: ${this.childWorkerCommand} ${this.childWorkerArgs.join(' ')}`);
-    const process = spawn(this.childWorkerCommand, this.childWorkerArgs);
-    const child = new Child(this.wakaq, process);
-    process.on('close', (code: number) => {
+    const p = spawn(this.childWorkerCommand, this.childWorkerArgs, {
+      stdio: [null, null, null, 'ipc'],
+      // stdio: 'pipe',
+    });
+    const child = new Child(this.wakaq, p);
+    p.on('close', (code: number) => {
       t._onChildExited(child, code);
     });
-    process.stdout.on('data', (data: string | Buffer) => {
-      t._onMessageReceivedFromChild(child, data);
+    p.on('message', (message: string | Buffer) => {
+      t._onMessageReceivedFromChild(child, message);
+    });
+    p.stdout?.on('data', (data: string | Buffer) => {
+      t._onOutputReceivedFromChild(child, data);
+    });
+    p.stderr?.on('data', (data: string | Buffer) => {
+      t._onOutputReceivedFromChild(child, data);
     });
     this.children.push(child);
   }
 
   private _stop() {
     this._stopProcessing = true;
-    this.children.forEach((child) => {
-      child.sigterm();
-    });
-    this.wakaq.dispose();
+    console.log('parent stopping');
+    this._stopAllChildren();
   }
 
   private _stopAllChildren() {
@@ -110,18 +119,32 @@ export class WakaQWorker {
   }
 
   private _onExitParent() {
+    console.log('onExitParent');
     this._stop();
   }
 
   private _onChildExited(child: Child, code: number) {
+    console.log('onChildExited');
+    this.logger.debug(`child process ${child.process.pid} exited: ${code}`);
+    console.log(`child process ${child.process.pid} exited: ${code}`);
     this.children = this.children.filter((c) => c !== child);
   }
 
+  private _onOutputReceivedFromChild(child: Child, data: string | Buffer) {
+    this.logger.debug(`received output from child process ${child.process.pid}`);
+    if (data instanceof Buffer) data = data.toString();
+    console.log(`GOT OUTPUT FROM CHILD: "${data}"`);
+    if (!data) return;
+  }
+
   private _onMessageReceivedFromChild(child: Child, message: string | Buffer) {
+    console.log('_onMessageReceivedFromChild');
+    console.log(message);
     this.logger.debug(`received ping from child process ${child.process.pid}`);
     child.lastPing = Math.round(Date.now() / 1000);
-    if (!message) return;
     if (message instanceof Buffer) message = message.toString();
+    console.log(`GOT MESSAGE FROM CHILD: "${message}"`);
+    if (!message) return;
     const parts = message.split(':', 1);
     if (parts.length == 2) {
       const taskName = parts[0];
@@ -137,7 +160,7 @@ export class WakaQWorker {
     child.softTimeoutReached = false;
   }
 
-  async _enqueueReadyEtaTasks() {
+  private async _enqueueReadyEtaTasks() {
     await Promise.all(
       this.wakaq.queues.map(async (q) => {
         const results = await this.wakaq.broker.getetatasks(q.brokerEtaKey, String(Math.round(Date.now() / 1000)));
@@ -153,7 +176,7 @@ export class WakaQWorker {
     );
   }
 
-  async _checkChildMemoryUsages() {
+  private async _checkChildMemoryUsages() {
     if (!this.wakaq.maxMemPercent) return;
     const totalMem = os.totalmem();
     const percent = ((totalMem - os.freemem()) / totalMem) * 100;
@@ -161,21 +184,25 @@ export class WakaQWorker {
     const usages = await Promise.all(this.children.map(async (child) => (await pidusage(child.process.pid ?? 0)).memory || 0));
     const maxIndex = usages.reduce((iMax, x, i, arr) => (x > (arr[iMax] ?? 0) ? i : iMax), 0);
     const child = this.children.at(maxIndex);
-    child?.sigterm();
+    if (!child) return;
+    this.logger.info(`killing child ${child.process.pid} from too much ram usage`);
+    child.sigterm();
   }
 
-  _checkChildRuntimes() {
+  private _checkChildRuntimes() {
     this.children.forEach((child) => {
       const softTimeout = child.softTimeout || this.wakaq.softTimeout;
       const hardTimeout = child.hardTimeout || this.wakaq.hardTimeout;
       if (softTimeout || hardTimeout) {
         const now = Math.round(Date.now() / 1000);
         const runtime = Duration.second(now - child.lastPing);
-        if (hardTimeout && runtime > hardTimeout) {
-          this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached hard timeout, sending sigkill`);
+        if (hardTimeout && runtime.seconds > hardTimeout.seconds) {
+          //this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached hard timeout, sending sigkill`);
+          this.logger.info(`child process ${child.process.pid} runtime ${runtime} reached hard timeout, sending sigkill`);
           child.sigkill();
-        } else if (!child.softTimeoutReached && softTimeout && runtime > softTimeout) {
-          this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached soft timeout, sending sigquit`);
+        } else if (!child.softTimeoutReached && softTimeout && runtime.seconds > softTimeout.seconds) {
+          //this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached soft timeout, sending sigquit`);
+          this.logger.info(`child process ${child.process.pid} runtime ${runtime} reached soft timeout, sending sigquit`);
           child.softTimeoutReached = true;
           child.sigquit();
         }
@@ -183,7 +210,7 @@ export class WakaQWorker {
     });
   }
 
-  _handleBroadcastTask(channel: string, message: string) {
+  private _handleBroadcastTask(channel: string, message: string) {
     const child = this.children.at(0);
     if (!child) {
       this.logger.error(`Unable to run broadcast task because no available child workers: ${message}`);
@@ -195,10 +222,11 @@ export class WakaQWorker {
     });
   }
 
-  _respawnMissingChildren() {
+  private _respawnMissingChildren() {
     if (this._stopProcessing) return;
     for (let i = this.wakaq.concurrency - this.children.length; i > 0; i--) {
-      this.logger.debug('restarting a crashed worker');
+      // this.logger.debug('restarting a crashed worker');
+      this.logger.info('restarting a crashed worker');
       this._spawnChild();
     }
   }

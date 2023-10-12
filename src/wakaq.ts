@@ -131,15 +131,15 @@ export class WakaQ {
     this.hardTimeout = this._asDuration(params?.hardTimeout, 0);
     this.waitTimeout = this._asDuration(params?.waitTimeout, 1);
 
-    if (this.softTimeout && this.softTimeout <= this.waitTimeout)
+    if (this.softTimeout.seconds && this.softTimeout.seconds <= this.waitTimeout.seconds)
       throw new WakaQError(
         `Soft timeout (${this.softTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
       );
-    if (this.hardTimeout && this.hardTimeout <= this.waitTimeout)
+    if (this.hardTimeout.seconds && this.hardTimeout.seconds <= this.waitTimeout.seconds)
       throw new WakaQError(
         `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
       );
-    if (this.softTimeout && this.hardTimeout && this.hardTimeout <= this.softTimeout)
+    if (this.softTimeout.seconds && this.hardTimeout.seconds && this.hardTimeout.seconds <= this.softTimeout.seconds)
       throw new WakaQError(
         `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to soft timeout (${this.softTimeout.seconds}).`,
       );
@@ -217,14 +217,14 @@ export class WakaQ {
     return callback;
   }
 
-  _validateQueueNames(queueNames: string[]): string[] {
+  private _validateQueueNames(queueNames: string[]): string[] {
     queueNames.forEach((queueName) => {
       if (!this.queuesByName.has(queueName)) throw new WakaQError(`Invalid queue: ${queueName}`);
     });
     return queueNames;
   }
 
-  _asDuration(obj?: Duration | { seconds: number } | number, def?: number): Duration {
+  private _asDuration(obj?: Duration | { seconds: number } | number, def?: number): Duration {
     if (obj instanceof Duration) return obj;
     if (typeof obj === 'object' && typeof obj.seconds === 'number') return obj as Duration;
     if (typeof obj === 'number') return Duration.second(obj);
@@ -278,7 +278,7 @@ export class WakaQ {
     return this._pubsub;
   }
 
-  _formatConcurrency(concurrency: number | string | undefined): number {
+  private _formatConcurrency(concurrency: number | string | undefined): number {
     if (!concurrency) return 0;
 
     if (typeof concurrency === 'number') {

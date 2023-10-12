@@ -37,7 +37,7 @@ export class Task {
   /*
   Run task in the background.
   */
-  async delay(queue?: WakaQueue | string, eta?: Duration | Date | number, ...args: any[]) {
+  public async delay(queue?: WakaQueue | string, eta?: Duration | Date | number, ...args: any[]) {
     queue = queue ?? this.queue;
     if (eta) {
       const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
@@ -53,7 +53,7 @@ export class Task {
   Only runs the task once per worker parent daemon, no matter the worker's concurrency.
   Returns the number of workers the task was sent to.
   */
-  async broadcast(...args: any[]): Promise<number> {
+  public async broadcast(...args: any[]): Promise<number> {
     return await this.wakaq.broadcast(this.name, args);
   }
 }

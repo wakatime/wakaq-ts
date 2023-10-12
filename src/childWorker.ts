@@ -14,7 +14,7 @@ export class WakaQChildWorker {
 
   constructor(wakaq: WakaQ) {
     this.wakaq = wakaq;
-    this.logger = setupLogging(this.wakaq);
+    this.logger = setupLogging(this.wakaq, true);
     this.wakaq.logger = this.logger;
   }
 
@@ -22,12 +22,10 @@ export class WakaQChildWorker {
     const _this = this;
 
     process.on('SIGINT', this._ignoreSignal);
-    process.on('SIGTERM', () => _this._stop());
+    process.on('SIGTERM', () => _this._stopFromSigTerm());
     process.on('SIGQUIT', () => _this._onSoftTimeout());
 
-    setupLogging(this.wakaq, true);
-
-    process.on('message', this._executeBroadcastTask);
+    process.on('message', this._onMessageFromParent);
 
     try {
       this.logger.debug(`started worker process ${process.pid}`);
@@ -78,22 +76,33 @@ export class WakaQChildWorker {
       if (error instanceof SoftTimeout) {
         if (this.wakaq.currentTask !== null) throw error;
       } else {
+        console.log('got error');
+        console.log(error);
         this.logger.error(error);
       }
     } finally {
+      this.wakaq.dispose();
+      process.off('message', this._onMessageFromParent);
     }
   }
 
   private _ignoreSignal() {
+    console.log('Got SIGINT');
     // noop
   }
 
+  private _stopFromSigTerm() {
+    console.log('Got SIGTERM');
+    this._stop();
+  }
+
   private _stop() {
+    console.log('Child exiting');
     this._stopProcessing = true;
-    this.wakaq.dispose();
   }
 
   private _onSoftTimeout() {
+    console.log('Got SIGQUIT');
     this._stopProcessing = true;
     throw new SoftTimeout('SoftTimeout');
   }
@@ -112,10 +121,16 @@ export class WakaQChildWorker {
 
   private _sendPingToParent(taskName: string = '', queueName: string = '') {
     const msg = taskName === '' ? '' : `${taskName}:${queueName}`;
-    if (process.send) process.send(msg);
+    console.log(msg);
+    /*if (process.send) {
+      process.send(msg, undefined, undefined, (e) => {
+        if (e) this.logger.warn(e);
+        else console.log('Sent.');
+      });
+    }*/
   }
 
-  async _executeTask(task: Task, args: any[], queue?: WakaQueue) {
+  private async _executeTask(task: Task, args: any[], queue?: WakaQueue) {
     this._sendPingToParent(task.name, queue?.name);
     this.logger.debug(`running with args ${args}`);
     if (this.wakaq.beforeTaskStartedCallback) this.wakaq.beforeTaskStartedCallback(task);
@@ -128,7 +143,9 @@ export class WakaQChildWorker {
     }
   }
 
-  async _executeBroadcastTask(message: string) {
+  private async _onMessageFromParent(message: string) {
+    console.log('_onMessageFromParent');
+    console.log(message);
     const payload = deserialize(message);
     const task = this.wakaq.tasks.get(payload.name);
     if (!task) {
