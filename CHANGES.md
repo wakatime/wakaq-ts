@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.13 (2022-10-12) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.12...v0.0.13)
+
+#### Misc
+
+- Not working... debugging tsx bug with ipc.
+
 ## 0.0.12 (2022-10-10) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.11...v0.0.12)
 
 #### Bugfix
