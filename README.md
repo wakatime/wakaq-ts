@@ -59,6 +59,10 @@ await new WakaQWorker(wakaq, ['node', '--loader', 'tsx', 'scripts/wakaqChild.ts'
 ```TypeScript
 import { WakaQChildWorker } from 'wakaq';
 import { wakaq } from '../app.js';
+
+// import your tasks so they're registered
+// also make sure to enable tsc option verbatimModuleSyntax
+
 await new WakaQChildWorker(wakaq).start();
 ```
 

@@ -43,6 +43,7 @@ export class WakaQChildWorker {
             const queue = this.wakaq.queuesByKey.get(queueBrokerKey);
             this.wakaq.currentTask = task;
             const retry = payload.retry ?? 0;
+            this.logger.info(`working on task ${task.name}`);
 
             try {
               await this._executeTask(task, payload.args, queue);

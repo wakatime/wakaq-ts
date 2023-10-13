@@ -20,6 +20,7 @@ export class Task {
     hardTimeout?: Duration,
     maxRetries?: number,
   ) {
+    if (!fn.name) throw new Error(`Every WakaQ task needs a name, for ex:\nconst mytask = () => {}\nexport default wakaq.task(mytask);`);
     this.fn = fn;
     this.name = fn.name;
     this.wakaq = wakaq;
@@ -37,14 +38,15 @@ export class Task {
   /*
   Run task in the background.
   */
-  public async delay(queue?: WakaQueue | string, eta?: Duration | Date | number, ...args: any[]) {
-    queue = queue ?? this.queue;
-    if (eta) {
-      const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
-      return await this.wakaq.enqueueWithEta(this.name, args, etaVerified, queue);
-    } else {
-      return await this.wakaq.enqueueAtEnd(this.name, args, queue);
-    }
+  public async delay(...args: any[]) {
+    // queue?: WakaQueue | string, eta?: Duration | Date | number,
+    //queue = queue ?? this.queue;
+    // if (eta) {
+    //  const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
+    //  return await this.wakaq.enqueueWithEta(this.name, args, etaVerified, queue);
+    //} else {
+    return await this.wakaq.enqueueAtEnd(this.name, args, this.queue);
+    //}
   }
 
   /*

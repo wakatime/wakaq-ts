@@ -67,8 +67,8 @@ export class WakaQWorker {
         await this.wakaq.sleep(Duration.millisecond(500));
       }
 
+      this.logger.info('shutting down...');
       if (this.children.length > 0) {
-        this.logger.info('shutting down...');
         while (this.children.length > 0) {
           this._stop();
           await this._checkChildMemoryUsages();
@@ -215,8 +215,7 @@ export class WakaQWorker {
   private _respawnMissingChildren() {
     if (this._stopProcessing) return;
     for (let i = this.wakaq.concurrency - this.children.length; i > 0; i--) {
-      // this.logger.debug('restarting a crashed worker');
-      this.logger.info('restarting a crashed worker');
+      this.logger.debug('restarting a crashed worker');
       this._spawnChild();
     }
   }
