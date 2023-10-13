@@ -22,7 +22,7 @@ export class WakaQChildWorker {
     const _this = this;
 
     process.on('SIGINT', this._ignoreSignal);
-    process.on('SIGTERM', () => _this._stopFromSigTerm());
+    process.on('SIGTERM', () => _this._stop());
     process.on('SIGQUIT', () => _this._onSoftTimeout());
 
     process.on('message', this._onMessageFromParent);
@@ -76,8 +76,6 @@ export class WakaQChildWorker {
       if (error instanceof SoftTimeout) {
         if (this.wakaq.currentTask !== null) throw error;
       } else {
-        console.log('got error');
-        console.log(error);
         this.logger.error(error);
       }
     } finally {
@@ -87,24 +85,16 @@ export class WakaQChildWorker {
   }
 
   private _ignoreSignal() {
-    console.log('Got SIGINT');
     // noop
   }
 
-  private _stopFromSigTerm() {
-    console.log('Got SIGTERM');
-    this._stop();
-  }
-
   private _stop() {
-    console.log('Child exiting');
     this._stopProcessing = true;
   }
 
   private _onSoftTimeout() {
-    console.log('Got SIGQUIT');
     this._stopProcessing = true;
-    throw new SoftTimeout('SoftTimeout');
+    // throw new SoftTimeout('SoftTimeout');
   }
 
   private async _blockingDequeue(): Promise<
@@ -120,14 +110,16 @@ export class WakaQChildWorker {
   }
 
   private _sendPingToParent(taskName: string = '', queueName: string = '') {
-    const msg = taskName === '' ? '' : `${taskName}:${queueName}`;
-    console.log(msg);
-    /*if (process.send) {
+    const msg = {
+      type: 'wakaq-ping',
+      taskName,
+      queueName,
+    };
+    if (process.send) {
       process.send(msg, undefined, undefined, (e) => {
         if (e) this.logger.warn(e);
-        else console.log('Sent.');
       });
-    }*/
+    }
   }
 
   private async _executeTask(task: Task, args: any[], queue?: WakaQueue) {

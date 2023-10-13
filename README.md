@@ -36,7 +36,6 @@ Add these scripts to your `package.json`:
 {
   "scripts": {
     "worker": "tsx scripts/wakaqWorker.ts",
-    "child": "tsx scripts/wakaqChild.ts",
     "info": "tsx scripts/wakaqInfo.ts",
     "purge": "tsx scripts/wakaqPurge.ts"
   }
@@ -50,7 +49,9 @@ Create these files in your `scripts` folder:
 ```TypeScript
 import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
-await new WakaQWorker(wakaq, ['npm', 'run', 'child']).start();
+
+// Can't use tsx directly because it breaks IPC (https://github.com/esbuild-kit/tsx/issues/201)
+await new WakaQWorker(wakaq, ['node', '--loader', 'tsx', 'scripts/wakaqChild.ts']).start();
 ```
 
 `scripts/wakaqChild.ts`

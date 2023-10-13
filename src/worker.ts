@@ -6,6 +6,7 @@ import { Duration } from 'ts-duration';
 import { type Logger } from 'winston';
 import { Child } from './child.js';
 import { setupLogging } from './logger.js';
+import { WakaQPing } from './message.js';
 import { deserialize } from './serializer.js';
 import { WakaQ } from './wakaq.js';
 
@@ -108,7 +109,6 @@ export class WakaQWorker {
 
   private _stop() {
     this._stopProcessing = true;
-    console.log('parent stopping');
     this._stopAllChildren();
   }
 
@@ -119,44 +119,34 @@ export class WakaQWorker {
   }
 
   private _onExitParent() {
-    console.log('onExitParent');
     this._stop();
   }
 
   private _onChildExited(child: Child, code: number) {
-    console.log('onChildExited');
     this.logger.debug(`child process ${child.process.pid} exited: ${code}`);
-    console.log(`child process ${child.process.pid} exited: ${code}`);
     this.children = this.children.filter((c) => c !== child);
   }
 
   private _onOutputReceivedFromChild(child: Child, data: string | Buffer) {
     this.logger.debug(`received output from child process ${child.process.pid}`);
     if (data instanceof Buffer) data = data.toString();
-    console.log(`GOT OUTPUT FROM CHILD: "${data}"`);
     if (!data) return;
+    console.log(data);
   }
 
-  private _onMessageReceivedFromChild(child: Child, message: string | Buffer) {
-    console.log('_onMessageReceivedFromChild');
-    console.log(message);
-    this.logger.debug(`received ping from child process ${child.process.pid}`);
+  private _onMessageReceivedFromChild(child: Child, message: unknown) {
+    if (typeof message !== 'object') return;
+    const payload = message as WakaQPing;
+    if (payload.type !== 'wakaq-ping') return;
     child.lastPing = Math.round(Date.now() / 1000);
-    if (message instanceof Buffer) message = message.toString();
-    console.log(`GOT MESSAGE FROM CHILD: "${message}"`);
-    if (!message) return;
-    const parts = message.split(':', 1);
-    if (parts.length == 2) {
-      const taskName = parts[0];
-      const task = taskName ? this.wakaq.tasks.get(taskName) : undefined;
-      const queueName = parts[1];
-      const queue = this.wakaq.queues.find((q) => {
-        return q.name === queueName;
-      });
-      child.setTimeouts(this.wakaq, task, queue);
-    } else {
-      child.setTimeouts(this.wakaq);
-    }
+    this.logger.debug(`received ping from child process ${child.process.pid}`);
+    const taskName = payload.task;
+    const task = taskName ? this.wakaq.tasks.get(taskName) : undefined;
+    const queueName = payload.queue;
+    const queue = this.wakaq.queues.find((q) => {
+      return q.name === queueName;
+    });
+    child.setTimeouts(this.wakaq, task, queue);
     child.softTimeoutReached = false;
   }
 
