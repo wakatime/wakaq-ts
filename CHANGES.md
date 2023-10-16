@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.17 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.16...v0.0.17)
+
+#### Misc
+
+- Allow setting TLS on Redis connection.
+
 ## 0.0.16 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.15...v0.0.16)
 
 #### Bugfix
