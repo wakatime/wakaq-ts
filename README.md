@@ -71,8 +71,8 @@ await new WakaQChildWorker(wakaq).start();
 ```TypeScript
 import { inspect } from 'wakaq';
 import { wakaq } from '../app.js';
-console.log(JSON.stringify(await inspect(wakaq), null, 2));
-wakaq.dispose();
+console.log(JSON.stringify(await inspect(await wakaq.connect()), null, 2));
+wakaq.disconnect();
 ```
 
 `scripts/wakaqPurge.ts`
@@ -86,12 +86,13 @@ const queue = wakaq.queuesByName.get(queueName ?? '');
 if (!queue) {
   throw new Error(`Queue not found: ${queueName}`);
 }
+await wakaq.connect();
 let count = await numPendingTasksInQueue(wakaq, queue);
 await purgeQueue(wakaq, queue);
 count += await numPendingEtaTasksInQueue(wakaq, queue);
 await purgeEtaQueue(wakaq, queue);
 console.log(`Purged ${count} tasks from ${queue.name}`);
-wakaq.dispose();
+wakaq.disconnect();
 ```
 
 ## Deploying

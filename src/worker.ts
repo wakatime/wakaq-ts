@@ -58,10 +58,12 @@ export class WakaQWorker {
     this.logger.info('finished spawning all workers');
 
     try {
-      this.wakaq.pubsub.subscribe(this.wakaq.broadcastKey, (err) => {
+      await this.wakaq.connect();
+      const pubsub = await this.wakaq.pubsub();
+      pubsub.on('message', this._handleBroadcastTask);
+      await pubsub.subscribe(this.wakaq.broadcastKey, (err) => {
         if (err) this.logger.error(`Failed to subscribe to broadcast tasks: ${err.message}`);
       });
-      this.wakaq.pubsub.on('message', this._handleBroadcastTask);
 
       while (!this._stopProcessing) {
         this._respawnMissingChildren();
@@ -83,7 +85,7 @@ export class WakaQWorker {
       this.logger.error(error);
       this._stop();
     } finally {
-      this.wakaq.dispose();
+      this.wakaq.disconnect();
     }
   }
 

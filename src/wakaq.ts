@@ -49,6 +49,8 @@ export class WakaQ {
   public host?: string;
   public port?: number;
   public db?: number;
+  public username?: string;
+  public password?: string;
   public tasks: Map<string, Task> = new Map<string, Task>([]);
   public broker: Redis;
   public queues: WakaQueue[];
@@ -107,6 +109,9 @@ export class WakaQ {
       beforeTaskStartedCallback,
       afterTaskFinishedCallback,
     } = params ?? {};
+
+    this.username = username;
+    this.password = password;
 
     const lowestPriority = Math.max(
       ...queues.map((q) => {
@@ -167,21 +172,27 @@ export class WakaQ {
       username: username,
       password: password,
       db: this.db,
+      lazyConnect: true,
       connectTimeout: this.connectTimeout,
       commandTimeout: this.commandTimeout,
       keepAlive: this.keepAlive,
       noDelay: this.noDelay,
-    });
-    this.broker.defineCommand('getetatasks', {
-      numberOfKeys: 1,
-      lua: ZRANGEPOP,
     });
     this.broker.on('error', (err) => {
       this.logger?.error(err);
     });
   }
 
-  public dispose() {
+  public async connect() {
+    await this.broker.connect();
+    this.broker.defineCommand('getetatasks', {
+      numberOfKeys: 1,
+      lua: ZRANGEPOP,
+    });
+    return this;
+  }
+
+  public disconnect() {
     this.broker.disconnect();
     this._pubsub?.disconnect();
   }
@@ -255,13 +266,33 @@ export class WakaQ {
 
   public async broadcast(taskName: string, args: any[]): Promise<number> {
     const payload = serialize({ name: taskName, args: args });
-    return await this.pubsub.publish(this.broadcastKey, payload);
+    const pubsub = await this.pubsub();
+    return await pubsub.publish(this.broadcastKey, payload);
   }
 
   public async sleep(duration: Duration) {
     return new Promise((resolve) => {
       setTimeout(resolve, duration.milliseconds);
     });
+  }
+
+  public async pubsub() {
+    if (!this._pubsub) {
+      this._pubsub = new Redis({
+        host: this.host,
+        port: this.port,
+        username: this.username,
+        password: this.password,
+        db: this.db,
+        lazyConnect: true,
+        connectTimeout: this.connectTimeout,
+        commandTimeout: this.commandTimeout,
+        keepAlive: this.keepAlive,
+        noDelay: this.noDelay,
+      });
+      await this._pubsub.connect();
+    }
+    return this._pubsub;
   }
 
   private _queueOrDefault(queue?: WakaQueue | string): WakaQueue {
@@ -274,11 +305,6 @@ export class WakaQ {
   get defaultQueue(): WakaQueue {
     if (this.queues.length === 0) throw new WakaQError('Missing queues.');
     return this.queues[this.queues.length - 1] as WakaQueue;
-  }
-
-  get pubsub(): Redis {
-    if (!this._pubsub) this._pubsub = this.broker.duplicate();
-    return this._pubsub;
   }
 
   private _formatConcurrency(concurrency: number | string | undefined): number {

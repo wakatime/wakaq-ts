@@ -30,6 +30,8 @@ export class WakaQChildWorker {
     try {
       this.logger.debug(`started worker process ${process.pid}`);
 
+      await this.wakaq.connect();
+
       if (this.wakaq.afterWorkerStartedCallback) await this.wakaq.afterWorkerStartedCallback();
 
       this._numTasksProcessed = 0;
@@ -80,7 +82,7 @@ export class WakaQChildWorker {
         this.logger.error(error);
       }
     } finally {
-      this.wakaq.dispose();
+      this.wakaq.disconnect();
       process.off('message', this._onMessageFromParent);
     }
   }
