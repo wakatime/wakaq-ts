@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.14 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.13...v0.0.14)
+
+#### Bugfix
+
+- Working MVP.
+
 ## 0.0.13 (2022-10-12) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.12...v0.0.13)
 
 #### Misc
