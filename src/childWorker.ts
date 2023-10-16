@@ -95,7 +95,7 @@ export class WakaQChildWorker {
 
   private _onSoftTimeout() {
     this._stopProcessing = true;
-    // throw new SoftTimeout('SoftTimeout');
+    throw new SoftTimeout('SoftTimeout');
   }
 
   private async _blockingDequeue(): Promise<

@@ -39,14 +39,15 @@ export class Task {
   Run task in the background.
   */
   public async delay(...args: any[]) {
-    // queue?: WakaQueue | string, eta?: Duration | Date | number,
-    //queue = queue ?? this.queue;
-    // if (eta) {
-    //  const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
-    //  return await this.wakaq.enqueueWithEta(this.name, args, etaVerified, queue);
-    //} else {
     return await this.wakaq.enqueueAtEnd(this.name, args, this.queue);
-    //}
+  }
+
+  /*
+  Run task in the background after eta.
+  */
+  public async delayWithEta(eta: Duration | Date | number, ...args: any[]) {
+    const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
+    return await this.wakaq.enqueueWithEta(this.name, args, etaVerified, this.queue);
   }
 
   /*
