@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.16 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.15...v0.0.16)
+
+#### Bugfix
+
+- Create pubsub connection from scratch instead of duplicating main Redis connection.
+
 ## 0.0.15 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.14...v0.0.15)
 
 #### Misc
