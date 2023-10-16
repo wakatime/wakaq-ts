@@ -28,9 +28,6 @@ export class WakaQWorker {
   }
 
   async start() {
-    this.logger.info(`host=${this.wakaq.host}`);
-    this.logger.info(`port=${this.wakaq.port}`);
-    this.logger.info(`db=${this.wakaq.db}`);
     this.logger.info(`concurrency=${this.wakaq.concurrency}`);
     this.logger.info(`soft_timeout=${this.wakaq.softTimeout.seconds}`);
     this.logger.info(`hard_timeout=${this.wakaq.hardTimeout.seconds}`);

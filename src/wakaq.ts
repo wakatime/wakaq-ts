@@ -22,6 +22,7 @@ export interface WakaQParams {
   host?: string;
   port?: number;
   db?: number;
+  tls?: { key: string; cert: string };
   concurrency?: number;
   excludeQueues?: string[];
   maxRetries?: number;
@@ -46,11 +47,6 @@ export interface WakaQParams {
 }
 
 export class WakaQ {
-  public host?: string;
-  public port?: number;
-  public db?: number;
-  public username?: string;
-  public password?: string;
   public tasks: Map<string, Task> = new Map<string, Task>([]);
   public broker: Redis;
   public queues: WakaQueue[];
@@ -88,9 +84,10 @@ export class WakaQ {
   constructor(params?: WakaQParams) {
     const queues = params?.queues ?? [];
     const schedules = params?.schedules ?? [];
-    this.host = params?.host ?? 'localhost';
-    this.port = params?.port ?? 6379;
-    this.db = params?.db ?? 0;
+    const host = params?.host ?? 'localhost';
+    const port = params?.port ?? 6379;
+    const db = params?.db ?? 0;
+    const tls = params?.tls;
     const concurrency = params?.concurrency ?? 1;
     const excludeQueues = params?.excludeQueues ?? [];
     const maxRetries = params?.maxRetries ?? 0;
@@ -109,9 +106,6 @@ export class WakaQ {
       beforeTaskStartedCallback,
       afterTaskFinishedCallback,
     } = params ?? {};
-
-    this.username = username;
-    this.password = password;
 
     const lowestPriority = Math.max(
       ...queues.map((q) => {
@@ -167,11 +161,12 @@ export class WakaQ {
     this.afterTaskFinishedCallback = afterTaskFinishedCallback;
 
     this.broker = new Redis({
-      host: this.host,
-      port: this.port,
+      host: host,
+      port: port,
       username: username,
       password: password,
-      db: this.db,
+      db: db,
+      tls: tls,
       lazyConnect: true,
       connectTimeout: this.connectTimeout,
       commandTimeout: this.commandTimeout,
@@ -278,18 +273,7 @@ export class WakaQ {
 
   public async pubsub() {
     if (!this._pubsub) {
-      this._pubsub = new Redis({
-        host: this.host,
-        port: this.port,
-        username: this.username,
-        password: this.password,
-        db: this.db,
-        lazyConnect: true,
-        connectTimeout: this.connectTimeout,
-        commandTimeout: this.commandTimeout,
-        keepAlive: this.keepAlive,
-        noDelay: this.noDelay,
-      });
+      this._pubsub = this.broker.duplicate();
       await this._pubsub.connect();
     }
     return this._pubsub;
