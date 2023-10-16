@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.15 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.14...v0.0.15)
+
+#### Misc
+
+- Log host, port, and db when worker first starts.
+
 ## 0.0.14 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.13...v0.0.14)
 
 #### Bugfix
