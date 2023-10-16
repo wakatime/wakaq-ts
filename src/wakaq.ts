@@ -46,6 +46,9 @@ export interface WakaQParams {
 }
 
 export class WakaQ {
+  public host?: string;
+  public port?: number;
+  public db?: number;
   public tasks: Map<string, Task> = new Map<string, Task>([]);
   public broker: Redis;
   public queues: WakaQueue[];
@@ -83,9 +86,9 @@ export class WakaQ {
   constructor(params?: WakaQParams) {
     const queues = params?.queues ?? [];
     const schedules = params?.schedules ?? [];
-    const host = params?.host ?? 'localhost';
-    const port = params?.port ?? 6379;
-    const db = params?.db ?? 0;
+    this.host = params?.host ?? 'localhost';
+    this.port = params?.port ?? 6379;
+    this.db = params?.db ?? 0;
     const concurrency = params?.concurrency ?? 1;
     const excludeQueues = params?.excludeQueues ?? [];
     const maxRetries = params?.maxRetries ?? 0;
@@ -159,11 +162,11 @@ export class WakaQ {
     this.afterTaskFinishedCallback = afterTaskFinishedCallback;
 
     this.broker = new Redis({
-      host: host,
-      port: port,
+      host: this.host,
+      port: this.port,
       username: username,
       password: password,
-      db: db,
+      db: this.db,
       connectTimeout: this.connectTimeout,
       commandTimeout: this.commandTimeout,
       keepAlive: this.keepAlive,
