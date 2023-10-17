@@ -132,8 +132,8 @@ Create a file at `/etc/systemd/system/wakaqworker.service` with the above conten
     systemctl daemon-reload && systemctl enable wakaqworker
 
 [wakaq python]: https://github.com/wakatime/wakaq
-[broadcast]: https://github.com/wakatime/wakaq-ts/blob/ddf0dbd7e41336552cf27114a625e2ebfd6b580a/src/task.ts#L40
-[soft timeout]: https://github.com/wakatime/wakaq-ts/blob/ddf0dbd7e41336552cf27114a625e2ebfd6b580a/src/exceptions.ts#L8
-[hard timeout]: https://github.com/wakatime/wakaq-ts/blob/ddf0dbd7e41336552cf27114a625e2ebfd6b580a/src/worker.ts#L158
-[wakaq init]: https://github.com/wakatime/wakaq-ts/blob/ddf0dbd7e41336552cf27114a625e2ebfd6b580a/src/wakaq.ts#L49
+[broadcast]: https://github.com/wakatime/wakaq-ts/blob/v1.0.0/src/task.ts#L61
+[soft timeout]: https://github.com/wakatime/wakaq-ts/blob/v1.0.0/src/childWorker.ts#L98
+[hard timeout]: https://github.com/wakatime/wakaq-ts/blob/v1.0.0/src/worker.ts#L194
+[wakaq init]: https://github.com/wakatime/wakaq-ts/blob/v1.0.0/src/wakaq.ts#L27
 [max open ports]: https://wakatime.com/blog/47-maximize-your-concurrent-web-server-connections
