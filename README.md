@@ -51,7 +51,6 @@ export const wakaq = new WakaQ({
   concurrency: 'cores*4',
 
   /* List your queues and their priorities.
-     Queues can be defined as Queue instances, tuples, or just a str.
   */
   queues: [
     new WakaQueue('high priority'),
@@ -70,8 +69,7 @@ export const wakaq = new WakaQ({
   maxRetries: 3,
 
   /* Schedule two tasks, the first runs every minute, the second once every ten minutes.
-     Scheduled tasks can be passed as CronTask instances or tuples. To run scheduled
-     tasks you must keep a wakaq scheduler running as a daemon.
+     To run scheduled tasks you must keep a wakaq scheduler running as a daemon.
   */
   schedules: [
 
