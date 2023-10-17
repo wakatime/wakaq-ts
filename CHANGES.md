@@ -1,5 +1,11 @@
 # CHANGES
 
+## 1.0.1 (2022-10-17) [commits](https://github.com/wakatime/wakaq-ts/compare/v1.0.0...v1.0.1)
+
+#### Bugfix
+
+- Fix scheduler.
+
 ## 1.0.0 (2022-10-17) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.18...v1.0.0)
 
 #### Misc
