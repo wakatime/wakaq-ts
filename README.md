@@ -9,7 +9,7 @@ For the original Python version, see [WakaQ for Python][wakaq python].
 ## Features
 
 - Queue priority
-- Delayed tasks (run tasks after a timedelta eta)
+- Delayed tasks (run tasks after a duration eta)
 - Scheduled periodic tasks
 - [Broadcast][broadcast] a task to all workers
 - Task [soft][soft timeout] and [hard][hard timeout] timeout limits
