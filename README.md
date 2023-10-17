@@ -26,8 +26,39 @@ Want more features like rate limiting, task deduplication, etc? Too bad, feature
 `app.ts`
 
 ```TypeScript
+import { Duration } from 'ts-duration';
 import { WakaQ, WakaQWorker } from 'wakaq';
-export const wakaq = new WakaQ();
+import { z } from 'zod';
+import { prisma } from './db';
+
+export const wakaq = new WakaQ({
+  host: '<REDIS_HOST>', // defaults to localhost
+  port: REDIS_PORT, // defaults to 6379
+  username: '<REDIS_USERNAME>',
+  password: '<REDIS_PASSWORD>',
+  softTimeout: Duration.minute(14),
+  hardTimeout: Duration.minute(15),
+  queues: [
+    new WakaQueue('high priority'),
+    new WakaQueue('default'),
+  ],
+  tls: NODE_ENV == 'production' ? { cert: '', key: '' } : undefined,
+  waitTimeout: Duration.second(1),
+});
+
+export const createUserInBackground = wakaq.task(
+  async (firstName: string) => {
+    const name = z.string().safeParse(firstName);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    await prisma.User.create({
+      data: { firstName: result.data },
+    });
+  },
+  { name: 'createUserInBackground' },
+);
+
 ```
 
 Add these scripts to your `package.json`:
@@ -94,6 +125,8 @@ await purgeEtaQueue(wakaq, queue);
 console.log(`Purged ${count} tasks from ${queue.name}`);
 wakaq.disconnect();
 ```
+
+After running `npm run worker` when you run `createUserInBackground('alan')` your task executes in the background on the worker server.
 
 ## Deploying
 
