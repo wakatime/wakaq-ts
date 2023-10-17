@@ -1,5 +1,11 @@
 # CHANGES
 
+## 0.0.18 (2022-10-17) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.17...v0.0.18)
+
+#### Bugfix
+
+- Allow manually setting task names.
+
 ## 0.0.17 (2022-10-16) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.16...v0.0.17)
 
 #### Misc
