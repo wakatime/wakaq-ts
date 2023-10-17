@@ -43,7 +43,6 @@ export const wakaq = new WakaQ({
     new WakaQueue('default'),
   ],
   tls: NODE_ENV == 'production' ? { cert: '', key: '' } : undefined,
-  waitTimeout: Duration.second(1),
 });
 
 export const createUserInBackground = wakaq.task(
