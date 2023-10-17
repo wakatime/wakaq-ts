@@ -1,5 +1,11 @@
 # CHANGES
 
+## 1.0.0 (2022-10-17) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.18...v1.0.0)
+
+#### Misc
+
+- Verified working, bump version to stable.
+
 ## 0.0.18 (2022-10-17) [commits](https://github.com/wakatime/wakaq-ts/compare/v0.0.17...v0.0.18)
 
 #### Bugfix
