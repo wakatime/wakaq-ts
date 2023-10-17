@@ -29,22 +29,55 @@ Want more features like rate limiting, task deduplication, etc? Too bad, feature
 
 ```TypeScript
 import { Duration } from 'ts-duration';
-import { WakaQ, WakaQWorker } from 'wakaq';
+import { CronTask, WakaQ, WakaQWorker } from 'wakaq';
 import { z } from 'zod';
 import { prisma } from './db';
 
 export const wakaq = new WakaQ({
-  host: '<REDIS_HOST>', // defaults to localhost
-  port: REDIS_PORT, // defaults to 6379
-  username: '<REDIS_USERNAME>',
-  password: '<REDIS_PASSWORD>',
+
+  /* Raise SoftTimeout in a task if it runs longer than 14 minutes. Can also be set per
+     task or queue. If no soft timeout set, tasks can run forever.
+  */
   softTimeout: Duration.minute(14),
+
+  /* SIGKILL a task if it runs longer than 1 minute. Can be set per task or queue.
+  */
   hardTimeout: Duration.minute(15),
+
+  /* Number of worker processes. Must be an int or str which evaluates to an
+     int. The variable "cores" is replaced with the number of processors on
+     the current machine.
+  */
+  concurrency: 'cores*4',
+
+  /* List your queues and their priorities.
+     Queues can be defined as Queue instances, tuples, or just a str.
+  */
   queues: [
     new WakaQueue('high priority'),
     new WakaQueue('default'),
   ],
+
+  /* Redis normally doesn't use TLS, but some cloud providers need it.
+  */
   tls: NODE_ENV == 'production' ? { cert: '', key: '' } : undefined,
+
+  /* If the task soft timeouts, retry up to 3 times. Max retries comes first
+     from the task decorator if set, next from the Queue's maxRetries,
+     lastly from the option below. If No maxRetries is found, the task
+     is not retried on a soft timeout.
+  */
+  maxRetries: 3,
+
+  /* Schedule two tasks, the first runs every minute, the second once every ten minutes.
+     Scheduled tasks can be passed as CronTask instances or tuples. To run scheduled
+     tasks you must keep a wakaq scheduler running as a daemon.
+  */
+  schedules: [
+
+    // Runs myTask once every 5 minutes.
+    new CronTask('*/5 * * * *', 'myTask'),
+  ],
 });
 
 export const createUserInBackground = wakaq.task(
