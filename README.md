@@ -1,5 +1,7 @@
 # ![logo](https://raw.githubusercontent.com/wakatime/wakaq-ts/main/wakatime-logo.png 'WakaQ') WakaQ
 
+[![wakatime](https://wakatime.com/badge/github/wakatime/wakaq-ts.svg)](https://wakatime.com/badge/github/wakatime/wakaq-ts)
+
 Background task queue for TypeScript backed by Redis, a super minimal Celery.
 
 For the original Python version, see [WakaQ for Python][wakaq python].
