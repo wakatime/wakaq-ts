@@ -3,7 +3,7 @@ export { CronTask } from './cronTask.js';
 export { SoftTimeout, WakaQError } from './exceptions.js';
 export { Level } from './logger.js';
 export { WakaQueue } from './queue.js';
-export { Scheduler } from './scheduler.js';
+export { WakaQScheduler } from './scheduler.js';
 export { Task } from './task.js';
 export {
   QueuesInfo,

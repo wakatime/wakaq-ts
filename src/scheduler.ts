@@ -5,7 +5,7 @@ import { WakaQError } from './exceptions.js';
 import { setupLogging } from './logger.js';
 import { WakaQ } from './wakaq.js';
 
-export class Scheduler {
+export class WakaQScheduler {
   public wakaq: WakaQ;
   public logger: Logger;
 
@@ -24,30 +24,39 @@ export class Scheduler {
     }
 
     let upcomingTasks: CronTask[] = [];
-    while (true) {
-      upcomingTasks.forEach((cronTask) => {
-        const task = this.wakaq.tasks.get(cronTask.taskName);
-        if (task) {
-          const queue = cronTask.queue ?? task?.queue ?? this.wakaq.defaultQueue;
 
-          this.logger.debug(`run scheduled task on queue ${queue.name}: ${task.name}`);
-          this.wakaq.enqueueAtFront(task.name, cronTask.args, queue);
-        }
-      });
+    try {
+      await this.wakaq.connect();
 
-      const crons = this.wakaq.schedules.map((cronTask) => {
-        return { duration: Duration.second(Math.round(cronTask.interval.next().getTime() / 1000)), cronTask: cronTask };
-      });
-      const sleepDuration = crons
-        .map((cron) => cron.duration)
-        .reduce((current, next) => {
-          return next < current ? next : current;
-        }, Duration.hour(24));
+      while (true) {
+        upcomingTasks.forEach((cronTask) => {
+          const task = this.wakaq.tasks.get(cronTask.taskName);
+          if (task) {
+            const queue = cronTask.queue ?? task?.queue ?? this.wakaq.defaultQueue;
 
-      upcomingTasks = crons.filter((cron) => cron.duration.minutes < sleepDuration.minutes).map((cron) => cron.cronTask);
+            this.logger.debug(`run scheduled task on queue ${queue.name}: ${task.name}`);
+            this.wakaq.enqueueAtFront(task.name, cronTask.args, queue);
+          }
+        });
 
-      // sleep until the next scheduled task
-      await this.wakaq.sleep(sleepDuration);
+        const crons = this.wakaq.schedules.map((cronTask) => {
+          return { duration: Duration.second(Math.round(cronTask.interval.next().getTime() / 1000)), cronTask: cronTask };
+        });
+        const sleepDuration = crons
+          .map((cron) => cron.duration)
+          .reduce((current, next) => {
+            return next < current ? next : current;
+          }, Duration.hour(24));
+
+        upcomingTasks = crons.filter((cron) => cron.duration.minutes < sleepDuration.minutes).map((cron) => cron.cronTask);
+
+        // sleep until the next scheduled task
+        await this.wakaq.sleep(sleepDuration);
+      }
+    } catch (error) {
+      this.logger.error(error);
+    } finally {
+      this.wakaq.disconnect();
     }
   }
 }

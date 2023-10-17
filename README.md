@@ -69,7 +69,7 @@ export const wakaq = new WakaQ({
   maxRetries: 3,
 
   /* Schedule two tasks, the first runs every minute, the second once every ten minutes.
-     To run scheduled tasks you must keep a wakaq scheduler running as a daemon.
+     To run scheduled tasks you must keep `npm run scheduler` running as a daemon.
   */
   schedules: [
 
@@ -99,6 +99,7 @@ Add these scripts to your `package.json`:
 {
   "scripts": {
     "worker": "tsx scripts/wakaqWorker.ts",
+    "scheduler": "tsx scripts/wakaqScheduler.ts",
     "info": "tsx scripts/wakaqInfo.ts",
     "purge": "tsx scripts/wakaqPurge.ts"
   }
@@ -115,6 +116,15 @@ import { wakaq } from '../app.js';
 
 // Can't use tsx directly because it breaks IPC (https://github.com/esbuild-kit/tsx/issues/201)
 await new WakaQWorker(wakaq, ['node', '--loader', 'tsx', 'scripts/wakaqChild.ts']).start();
+```
+
+`scripts/wakaqScheduler.ts`
+
+```TypeScript
+import { WakaQScheduler } from 'wakaq';
+import { wakaq } from '../app.js';
+
+await new WakaQScheduler(wakaq).start();
 ```
 
 `scripts/wakaqChild.ts`
