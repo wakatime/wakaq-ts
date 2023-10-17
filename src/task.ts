@@ -15,14 +15,16 @@ export class Task {
   constructor(
     wakaq: WakaQ,
     fn: (...args: unknown[]) => Promise<void>,
+    name?: string,
     queue?: WakaQueue | string,
     softTimeout?: Duration,
     hardTimeout?: Duration,
     maxRetries?: number,
   ) {
-    if (!fn.name) throw new Error(`Every WakaQ task needs a name, for ex:\nconst mytask = () => {}\nexport default wakaq.task(mytask);`);
+    if (!name && !fn.name)
+      throw new Error(`Every WakaQ task needs a name, for ex:\nconst mytask = () => {}\nexport default wakaq.task(mytask);`);
     this.fn = fn;
-    this.name = fn.name;
+    this.name = name ?? fn.name;
     this.wakaq = wakaq;
     if (queue) this.queue = WakaQueue.create(queue, this.wakaq.queuesByName);
 

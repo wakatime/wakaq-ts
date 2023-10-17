@@ -16,6 +16,14 @@ declare module 'ioredis' {
   }
 }
 
+export interface RegisterTaskParams {
+  name?: string;
+  queue?: WakaQueue | string;
+  maxRetries?: number;
+  softTimeout?: Duration;
+  hardTimeout?: Duration;
+}
+
 export interface WakaQParams {
   queues?: WakaQueue[];
   schedules?: CronTask[];
@@ -198,14 +206,8 @@ export class WakaQ {
   Wrap an async function with this to register it as a task.
   Returns the new Task with methods delay() and broadcast().
   */
-  public task(
-    fn: (...arg0: unknown[]) => Promise<void>,
-    queue?: WakaQueue | string,
-    maxRetries?: number,
-    softTimeout?: Duration,
-    hardTimeout?: Duration,
-  ): Task {
-    const task = new Task(this, fn, queue, softTimeout, hardTimeout, maxRetries);
+  public task(fn: (...arg0: unknown[]) => Promise<void>, params?: RegisterTaskParams): Task {
+    const task = new Task(this, fn, params?.name, params?.queue, params?.softTimeout, params?.hardTimeout, params?.maxRetries);
     if (this.tasks.has(task.name)) throw new WakaQError(`Duplicate task name: ${task.name}`);
     this.tasks.set(task.name, task);
     return task;
