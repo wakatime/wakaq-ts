@@ -40,14 +40,14 @@ export class Task {
   /*
   Run task in the background.
   */
-  public async delay(...args: any[]) {
+  public async enqueue(...args: any[]) {
     return await this.wakaq.enqueueAtEnd(this.name, args, this.queue);
   }
 
   /*
   Run task in the background after eta.
   */
-  public async delayWithEta(eta: Duration | Date | number, ...args: any[]) {
+  public async enqueueAfterDelay(eta: Duration | Date | number, ...args: any[]) {
     const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
     return await this.wakaq.enqueueWithEta(this.name, args, etaVerified, this.queue);
   }

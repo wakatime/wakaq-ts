@@ -204,7 +204,8 @@ export class WakaQ {
   Task wrapper.
 
   Wrap an async function with this to register it as a task.
-  Returns the new Task with methods delay() and broadcast().
+  Returns the new Task with methods enqueue(), enqueueAfterDelay,
+  and broadcast().
   */
   public task(fn: (...arg0: unknown[]) => Promise<void>, params?: RegisterTaskParams): Task {
     const task = new Task(this, fn, params?.name, params?.queue, params?.softTimeout, params?.hardTimeout, params?.maxRetries);
