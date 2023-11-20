@@ -14,16 +14,18 @@ export const setupLogging = (wakaq: WakaQ, isChild: boolean = false, isScheduler
     level: level,
     format: format.combine(
       format.errors({ stack: true }),
-      format.timestamp(),
-      format((info) => {
+      format.printf(({ level, message, stack }) => {
+        let msg = `${new Date().toISOString()} ${level}`;
         const task = wakaq.currentTask;
         if (task) {
-          info.message = `${new Date().toISOString()} ${info.level} in ${task.name}: ${info.message}`;
-        } else {
-          info.message = `${new Date().toISOString()} ${info.level}: ${info.message}`;
+          msg = `${msg} in ${task.name}`;
         }
-        return info;
-      })(),
+        msg = `${msg}: ${message}`;
+        if (stack) {
+          msg = `${msg} - ${stack}`;
+        }
+        return msg;
+      }),
     ),
   });
 
