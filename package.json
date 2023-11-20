@@ -35,14 +35,14 @@
     "node": ">=12"
   },
   "devDependencies": {
-    "@types/eslint": "^8.44.3",
-    "@types/node": "^20.8.2",
-    "@types/pidusage": "^2.0.3",
+    "@types/eslint": "^8.44.7",
+    "@types/node": "^20.9.2",
+    "@types/pidusage": "^2.0.5",
     "@types/prettier": "^2.7.3",
-    "@typescript-eslint/eslint-plugin": "6.7.4",
-    "@typescript-eslint/parser": "6.7.4",
-    "eslint": "^8.50.0",
-    "prettier": "^3.0.3",
+    "@typescript-eslint/eslint-plugin": "6.11.0",
+    "@typescript-eslint/parser": "6.11.0",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -50,6 +50,6 @@
     "ioredis": "^5.3.2",
     "pidusage": "^3.0.2",
     "ts-duration": "^1.1.0",
-    "winston": "^3.10.0"
+    "winston": "^3.11.0"
   }
 }
