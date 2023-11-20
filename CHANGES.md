@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.0.1 (2023-11-20) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.0.0...v2.0.1)
+
+#### Bugfix
+
+- Fix logger format.
+
 ## 2.0.0 (2023-11-20) [commits](https://github.com/wakatime/wakaq-ts/compare/v1.0.1...v2.0.0)
 
 #### Breaking
