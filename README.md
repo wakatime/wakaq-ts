@@ -168,7 +168,7 @@ console.log(`Purged ${count} tasks from ${queue.name}`);
 wakaq.disconnect();
 ```
 
-After running `npm run worker` when you run `createUserInBackground('alan')` your task executes in the background on the worker server.
+After running `npm run worker` when you run `createUserInBackground.enqueue('alan')` your task executes in the background on the worker server.
 
 ## Deploying
 

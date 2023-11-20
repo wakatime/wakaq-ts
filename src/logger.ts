@@ -12,25 +12,25 @@ export const setupLogging = (wakaq: WakaQ, isChild: boolean = false, isScheduler
   const level = isScheduler ? wakaq.schedulerLogLevel : wakaq.workerLogLevel;
   const logger = createLogger({
     level: level,
-    format: format((info) => {
-      const task = wakaq.currentTask;
-      if (task) {
-        info.message = `${new Date().toISOString()} ${info.level} in ${task.name}: ${info.message}`;
-      } else {
-        info.message = `${new Date().toISOString()} ${info.level}: ${info.message}`;
-      }
-      return info;
-    })(),
+    format: format.combine(
+      format.errors({ stack: true }),
+      format.timestamp(),
+      format((info) => {
+        const task = wakaq.currentTask;
+        if (task) {
+          info.message = `${new Date().toISOString()} ${info.level} in ${task.name}: ${info.message}`;
+        } else {
+          info.message = `${new Date().toISOString()} ${info.level}: ${info.message}`;
+        }
+        return info;
+      })(),
+    ),
   });
 
   const logFile = isScheduler ? wakaq.schedulerLogFile : wakaq.workerLogFile;
 
   if (isChild || !logFile) {
-    logger.add(
-      new transports.Console({
-        format: format.simple(),
-      }),
-    );
+    logger.add(new transports.Console());
   } else {
     logger.add(
       new transports.File({
