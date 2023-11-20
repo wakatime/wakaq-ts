@@ -1,5 +1,15 @@
 # CHANGES
 
+## 2.0.0 (2023-11-20) [commits](https://github.com/wakatime/wakaq-ts/compare/v1.0.1...v2.0.0)
+
+#### Breaking
+
+- Rename delay to enqueue to reduce confusion.
+
+#### Bugfix
+
+- Show full stacktrace in error logs.
+
 ## 1.0.1 (2023-10-17) [commits](https://github.com/wakatime/wakaq-ts/compare/v1.0.0...v1.0.1)
 
 #### Bugfix
