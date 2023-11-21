@@ -31,8 +31,10 @@ export class Task {
     this.softTimeout = softTimeout;
     this.hardTimeout = hardTimeout;
 
-    if (this.softTimeout && this.hardTimeout && this.hardTimeout <= this.softTimeout)
-      throw new WakaQError(`Task hard timeout (${this.hardTimeout}) can not be less than or equal to soft timeout (${this.softTimeout}).`);
+    if (this.softTimeout && this.hardTimeout && this.hardTimeout.seconds <= this.softTimeout.seconds)
+      throw new WakaQError(
+        `Task hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to soft timeout (${this.softTimeout.seconds}).`,
+      );
 
     this.maxRetries = Math.round(maxRetries ?? 0);
   }

@@ -19,8 +19,10 @@ export class WakaQueue {
     this.softTimeout = softTimeout;
     this.hardTimeout = hardTimeout;
 
-    if (this.softTimeout && this.hardTimeout && this.hardTimeout <= this.softTimeout) {
-      throw new WakaQError(`Queue hard timeout (${this.hardTimeout}) cannot be less than or equal to soft timeout (${this.softTimeout}).`);
+    if (this.softTimeout && this.hardTimeout && this.hardTimeout.seconds <= this.softTimeout.seconds) {
+      throw new WakaQError(
+        `Queue hard timeout (${this.hardTimeout.seconds}) cannot be less than or equal to soft timeout (${this.softTimeout.seconds}).`,
+      );
     }
 
     if (maxRetries && isNaN(maxRetries)) throw new Error(`Invalid queue max retries: ${maxRetries}`);
