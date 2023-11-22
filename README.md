@@ -40,7 +40,8 @@ export const wakaq = new WakaQ({
   */
   softTimeout: Duration.minute(14),
 
-  /* SIGKILL a task if it runs longer than 1 minute. Can be set per task or queue.
+  /* SIGKILL a task if it runs longer than 15 minutes. Can also be set per queue or
+     when enqueuing a task.
   */
   hardTimeout: Duration.minute(15),
 
