@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.0.3 (2023-11-22) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.0.2...v2.0.3)
+
+#### Misc
+
+- Less noisy default logging.
+
 ## 2.0.2 (2023-11-21) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.0.1...v2.0.2)
 
 #### Bugfix
