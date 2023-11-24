@@ -294,22 +294,28 @@ export class WakaQ {
     return this.queues[this.queues.length - 1] as WakaQueue;
   }
 
-  private _formatConcurrency(concurrency: number | string | undefined): number {
+  private _formatConcurrency(concurrency: number | string | undefined, isRecursive: boolean = false): number {
     if (!concurrency) return 0;
 
     if (typeof concurrency === 'number') {
-      if (concurrency < 1) throw new WakaQError(`Concurrency must be greater than zero: ${concurrency}`);
+      if (!isRecursive && concurrency < 1) throw new WakaQError(`Concurrency must be greater than zero: ${concurrency}`);
       return Math.round(concurrency);
     }
 
+    const parsed = this._parseConcurrency(concurrency);
+    if (Number.isNaN(parsed)) throw new WakaQError(`Error parsing concurrency: ${concurrency}`);
+    if (!isRecursive && !parsed) return 1;
+    if (!isRecursive && parsed < 1) throw new WakaQError(`Concurrency must be greater than zero: ${parsed}`);
+    return parsed;
+  }
+
+  private _parseConcurrency(concurrency: string): number {
     const parts = concurrency.split('*');
     if (parts.length > 1) {
-      return parts.map((part) => this._formatConcurrency(part)).reduce((a, n) => a * n, 1);
+      return parts.map((part) => this._formatConcurrency(part, true)).reduce((a, n) => a * n, 1);
     } else {
       const cores = String(os.cpus().length);
-      const x = Number.parseInt(concurrency.replace('cores', cores).trim());
-      if (Number.isNaN(x)) throw new WakaQError(`Error parsing concurrency: ${concurrency}`);
-      return x;
+      return Number.parseInt(concurrency.replace('cores', cores).trim());
     }
   }
 }
