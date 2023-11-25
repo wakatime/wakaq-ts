@@ -1,5 +1,6 @@
 import { Callback, Redis, Result } from 'ioredis';
 import * as os from 'os';
+import { type ConnectionOptions } from 'tls';
 import { Duration } from 'ts-duration';
 import { type Logger } from 'winston';
 import { ZRANGEPOP } from './constants.js';
@@ -30,7 +31,7 @@ export interface WakaQParams {
   host?: string;
   port?: number;
   db?: number;
-  tls?: { key: string; cert: string };
+  tls?: ConnectionOptions;
   concurrency?: number;
   excludeQueues?: string[];
   maxRetries?: number;
