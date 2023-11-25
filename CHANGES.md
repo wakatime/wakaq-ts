@@ -1,5 +1,15 @@
 # CHANGES
 
+## 2.1.0 (2023-11-25) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.0.3...v2.1.0)
+
+#### Feature
+
+- New single process mode.
+
+#### Bugfix
+
+- Improve parsing concurrency param.
+
 ## 2.0.3 (2023-11-22) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.0.2...v2.0.3)
 
 #### Misc
