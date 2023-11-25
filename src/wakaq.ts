@@ -144,18 +144,22 @@ export class WakaQ {
     this.hardTimeout = this._asDuration(params?.hardTimeout, 0);
     this.waitTimeout = this._asDuration(params?.waitTimeout, 1);
 
-    if (this.softTimeout.seconds && this.softTimeout.seconds <= this.waitTimeout.seconds)
-      throw new WakaQError(
-        `Soft timeout (${this.softTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
-      );
-    if (this.hardTimeout.seconds && this.hardTimeout.seconds <= this.waitTimeout.seconds)
-      throw new WakaQError(
-        `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
-      );
-    if (this.softTimeout.seconds && this.hardTimeout.seconds && this.hardTimeout.seconds <= this.softTimeout.seconds)
-      throw new WakaQError(
-        `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to soft timeout (${this.softTimeout.seconds}).`,
-      );
+    if (this.waitTimeout.seconds < 1) throw new WakaQError(`Wait timeout (${this.waitTimeout.seconds}) can not be less than 1 second.`);
+
+    if (!this.singleProcess) {
+      if (this.softTimeout.seconds && this.softTimeout.seconds <= this.waitTimeout.seconds)
+        throw new WakaQError(
+          `Soft timeout (${this.softTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
+        );
+      if (this.hardTimeout.seconds && this.hardTimeout.seconds <= this.waitTimeout.seconds)
+        throw new WakaQError(
+          `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to wait timeout (${this.waitTimeout.seconds}).`,
+        );
+      if (this.softTimeout.seconds && this.hardTimeout.seconds && this.hardTimeout.seconds <= this.softTimeout.seconds)
+        throw new WakaQError(
+          `Hard timeout (${this.hardTimeout.seconds}) can not be less than or equal to soft timeout (${this.softTimeout.seconds}).`,
+        );
+    }
 
     if ((maxMemPercent && maxMemPercent < 1) || maxMemPercent > 99)
       throw new WakaQError(`Max memory percent must be between 1 and 99: ${maxMemPercent}`);

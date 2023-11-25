@@ -31,9 +31,11 @@ export class WakaQWorker {
   }
 
   async start() {
-    this.logger.info(`concurrency=${this.wakaq.concurrency}`);
-    this.logger.info(`soft_timeout=${this.wakaq.softTimeout.seconds}`);
-    this.logger.info(`hard_timeout=${this.wakaq.hardTimeout.seconds}`);
+    if (!this.wakaq.singleProcess) {
+      this.logger.info(`concurrency=${this.wakaq.concurrency}`);
+      this.logger.info(`soft_timeout=${this.wakaq.softTimeout.seconds}`);
+      this.logger.info(`hard_timeout=${this.wakaq.hardTimeout.seconds}`);
+    }
     this.logger.info(`wait_timeout=${this.wakaq.waitTimeout.seconds}`);
     this.logger.info(`exclude_queues=${this.wakaq.excludeQueues}`);
     this.logger.info(`max_retries=${this.wakaq.maxRetries}`);
