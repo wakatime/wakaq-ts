@@ -1,5 +1,12 @@
 # CHANGES
 
+## 2.1.1 (2023-11-25) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.0...v2.1.1)
+
+#### Bugfix
+
+- Fix tls connection options type.
+- Skip validating unused params in singleProcess mode.
+
 ## 2.1.0 (2023-11-25) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.0.3...v2.1.0)
 
 #### Feature
