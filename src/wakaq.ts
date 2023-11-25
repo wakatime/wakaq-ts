@@ -7,7 +7,7 @@ import { CronTask } from './cronTask.js';
 import { WakaQError } from './exceptions.js';
 import { Level } from './logger.js';
 import { WakaQueue } from './queue.js';
-import { serialize } from './serializer.js';
+import { deserialize, serialize } from './serializer.js';
 import { Task } from './task.js';
 
 declare module 'ioredis' {
@@ -47,6 +47,7 @@ export interface WakaQParams {
   password?: string;
   workerLogFile?: string;
   schedulerLogFile?: string;
+  singleProcess?: boolean;
   workerLogLevel?: Level;
   schedulerLogLevel?: Level;
   afterWorkerStartedCallback?: () => Promise<void>;
@@ -75,6 +76,7 @@ export class WakaQ {
   public maxTasksPerWorker: number;
   public workerLogFile?: string;
   public schedulerLogFile?: string;
+  public singleProcess: boolean;
   public workerLogLevel: Level;
   public schedulerLogLevel: Level;
   public logger?: Logger;
@@ -105,6 +107,7 @@ export class WakaQ {
     this.commandTimeout = params?.commandTimeout ?? 15000;
     this.keepAlive = params?.keepAlive ?? 0;
     this.noDelay = params?.noDelay ?? true;
+    this.singleProcess = params?.singleProcess ?? false;
     const {
       username,
       password,
@@ -282,16 +285,26 @@ export class WakaQ {
     return this._pubsub;
   }
 
+  get defaultQueue(): WakaQueue {
+    if (this.queues.length === 0) throw new WakaQError('Missing queues.');
+    return this.queues[this.queues.length - 1] as WakaQueue;
+  }
+
+  public async blockingDequeue(): Promise<{ queueBrokerKey?: string; payload?: { name: string; args: any[]; retry?: number } }> {
+    if (this.brokerKeys.length === 0) {
+      this.sleep(this.waitTimeout);
+      return {};
+    }
+    const data = await this.broker.blpop(this.brokerKeys, this.waitTimeout.seconds);
+    if (!data) return {};
+    return { queueBrokerKey: data[0], payload: deserialize(data[1]) };
+  }
+
   private _queueOrDefault(queue?: WakaQueue | string): WakaQueue {
     if (typeof queue === 'string') queue = this.queuesByName.get(queue);
     if (queue) return queue;
 
     return this.defaultQueue;
-  }
-
-  get defaultQueue(): WakaQueue {
-    if (this.queues.length === 0) throw new WakaQError('Missing queues.');
-    return this.queues[this.queues.length - 1] as WakaQueue;
   }
 
   private _formatConcurrency(concurrency: number | string | undefined, isRecursive: boolean = false): number {

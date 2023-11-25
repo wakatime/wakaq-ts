@@ -37,7 +37,7 @@ export class WakaQChildWorker {
       this._numTasksProcessed = 0;
       while (!this._stopProcessing) {
         this._sendPingToParent();
-        const { queueBrokerKey, payload } = (await this._blockingDequeue()) || {};
+        const { queueBrokerKey, payload } = await this.wakaq.blockingDequeue();
         if (queueBrokerKey !== undefined && payload !== undefined) {
           const task = this.wakaq.tasks.get(payload.name);
           if (!task && payload.name) this.logger.error(`Task not found: ${payload.name}`);
@@ -98,18 +98,6 @@ export class WakaQChildWorker {
   private _onSoftTimeout() {
     this._stopProcessing = true;
     throw new SoftTimeout('SoftTimeout');
-  }
-
-  private async _blockingDequeue(): Promise<
-    { queueBrokerKey: string; payload: { name: string; args: any[]; retry?: number } } | undefined
-  > {
-    if (this.wakaq.brokerKeys.length === 0) {
-      this.wakaq.sleep(this.wakaq.waitTimeout);
-      return undefined;
-    }
-    const data = await this.wakaq.broker.blpop(this.wakaq.brokerKeys, this.wakaq.waitTimeout.seconds);
-    if (!data) return undefined;
-    return { queueBrokerKey: data[0], payload: deserialize(data[1]) };
   }
 
   private _sendPingToParent(taskName: string = '', queueName: string = '') {

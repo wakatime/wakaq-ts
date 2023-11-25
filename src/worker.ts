@@ -7,7 +7,9 @@ import { type Logger } from 'winston';
 import { Child } from './child.js';
 import { setupLogging } from './logger.js';
 import { WakaQPing } from './message.js';
+import { WakaQueue } from './queue.js';
 import { deserialize } from './serializer.js';
+import { Task } from './task.js';
 import { WakaQ } from './wakaq.js';
 
 export class WakaQWorker {
@@ -16,6 +18,7 @@ export class WakaQWorker {
   public childWorkerArgs: string[];
   public children: Child[] = [];
   private _stopProcessing: boolean = false;
+  private _numTasksProcessed: number = 0;
   public logger: Logger;
 
   constructor(wakaq: WakaQ, childWorkerCommand: string[]) {
@@ -40,7 +43,11 @@ export class WakaQWorker {
     this.logger.info(`scheduler_log_file=${this.wakaq.schedulerLogFile}`);
     this.logger.info(`worker_log_level=${this.wakaq.workerLogLevel}`);
     this.logger.info(`scheduler_log_level=${this.wakaq.schedulerLogLevel}`);
-    this.logger.info(`starting ${this.wakaq.concurrency} workers...`);
+    if (this.wakaq.singleProcess) {
+      this.logger.info('running in single process mode...');
+    } else {
+      this.logger.info(`starting ${this.wakaq.concurrency} workers...`);
+    }
 
     const _this = this;
 
@@ -49,10 +56,14 @@ export class WakaQWorker {
     process.on('SIGQUIT', () => _this._onExitParent());
 
     // spawn child processes
-    for (let i = 0; i < this.wakaq.concurrency; i++) {
-      this._spawnChild();
+    if (!this.wakaq.singleProcess) {
+      for (let i = 0; i < this.wakaq.concurrency; i++) {
+        this._spawnChild();
+      }
+      this.logger.info('finished spawning all workers');
     }
-    this.logger.info('finished spawning all workers');
+
+    if (this.wakaq.singleProcess && this.wakaq.afterWorkerStartedCallback) await this.wakaq.afterWorkerStartedCallback();
 
     try {
       await this.wakaq.connect();
@@ -62,9 +73,12 @@ export class WakaQWorker {
         if (err) this.logger.error(`Failed to subscribe to broadcast tasks: ${err.message}`);
       });
 
+      this._numTasksProcessed = 0;
       while (!this._stopProcessing) {
         this._respawnMissingChildren();
         await this._enqueueReadyEtaTasks();
+        if (this.wakaq.singleProcess) await this._processTasksSingleProcessMode();
+        await this._checkChildMemoryUsages();
         this._checkChildRuntimes();
         await this.wakaq.sleep(Duration.millisecond(500));
       }
@@ -107,6 +121,38 @@ export class WakaQWorker {
       t._onOutputReceivedFromChild(child, data);
     });
     this.children.push(child);
+  }
+
+  private async _processTasksSingleProcessMode() {
+    const { queueBrokerKey, payload } = await this.wakaq.blockingDequeue();
+    if (queueBrokerKey !== undefined && payload !== undefined) {
+      const task = this.wakaq.tasks.get(payload.name);
+      if (!task && payload.name) this.logger.error(`Task not found: ${payload.name}`);
+      if (task) {
+        const queue = this.wakaq.queuesByKey.get(queueBrokerKey);
+        this.wakaq.currentTask = task;
+        const retry = payload.retry ?? 0;
+        this.logger.debug(`working on task ${task.name}`);
+
+        try {
+          await this._executeTask(task, payload.args, queue);
+        } catch (error) {
+          const maxRetries = task.maxRetries ?? queue?.maxRetries ?? this.wakaq.maxRetries;
+          if (retry + 1 > maxRetries) {
+            this.logger.error(error);
+          } else {
+            this.logger.warning(error);
+            this.wakaq.enqueueAtEnd(task.name, payload.args, queue, retry);
+          }
+        } finally {
+          this.wakaq.currentTask = undefined;
+        }
+      }
+    }
+    if (this.wakaq.maxTasksPerWorker && this._numTasksProcessed >= this.wakaq.maxTasksPerWorker) {
+      this.logger.info(`exiting single process worker after ${this._numTasksProcessed} tasks`);
+      this._stopProcessing = true;
+    }
   }
 
   private _stop() {
@@ -173,6 +219,11 @@ export class WakaQWorker {
     const totalMem = os.totalmem();
     const percent = ((totalMem - os.freemem()) / totalMem) * 100;
     if (percent < this.wakaq.maxMemPercent) return;
+    if (this.wakaq.singleProcess) {
+      this.logger.info('stopping single process worker from too much ram usage');
+      this._stop();
+      return;
+    }
     const usages = await Promise.all(this.children.map(async (child) => (await pidusage(child.process.pid ?? 0)).memory || 0));
     const maxIndex = usages.reduce((iMax, x, i, arr) => (x > (arr[iMax] ?? 0) ? i : iMax), 0);
     const child = this.children.at(maxIndex);
@@ -216,9 +267,21 @@ export class WakaQWorker {
 
   private _respawnMissingChildren() {
     if (this._stopProcessing) return;
+    if (this.wakaq.singleProcess) return;
     for (let i = this.wakaq.concurrency - this.children.length; i > 0; i--) {
       this.logger.debug('restarting a crashed worker');
       this._spawnChild();
+    }
+  }
+
+  private async _executeTask(task: Task, args: any[], queue?: WakaQueue) {
+    this.logger.debug(`running with args ${args}`);
+    if (this.wakaq.beforeTaskStartedCallback) this.wakaq.beforeTaskStartedCallback(task);
+    try {
+      await task.fn(...args);
+    } finally {
+      this._numTasksProcessed += 1;
+      if (this.wakaq.afterTaskFinishedCallback) this.wakaq.afterTaskFinishedCallback(task);
     }
   }
 }
