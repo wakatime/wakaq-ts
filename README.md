@@ -29,7 +29,7 @@ Want more features like rate limiting, task deduplication, etc? Too bad, feature
 
 ```TypeScript
 import { Duration } from 'ts-duration';
-import { CronTask, WakaQ, WakaQWorker } from 'wakaq';
+import { CronTask, WakaQ, WakaQueue, WakaQWorker } from 'wakaq';
 import { z } from 'zod';
 import { prisma } from './db';
 
@@ -45,11 +45,9 @@ export const wakaq = new WakaQ({
   */
   hardTimeout: Duration.minute(15),
 
-  /* Number of worker processes. Must be an int or str which evaluates to an
-     int. The variable "cores" is replaced with the number of processors on
-     the current machine.
+  /* Number of worker processes. Must be an int.
   */
-  concurrency: 'cores*4',
+  concurrency: 2,
 
   /* List your queues and their priorities.
   */
@@ -60,7 +58,7 @@ export const wakaq = new WakaQ({
 
   /* Redis normally doesn't use TLS, but some cloud providers need it.
   */
-  tls: NODE_ENV == 'production' ? { cert: '', key: '' } : undefined,
+  tls: process.env.NODE_ENV == 'production' ? { cert: '', key: '' } : undefined,
 
   /* If the task soft timeouts, retry up to 3 times. Max retries comes first
      from the task decorator if set, next from the Queue's maxRetries,
@@ -116,7 +114,7 @@ import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
 
 // Can't use tsx directly because it breaks IPC (https://github.com/esbuild-kit/tsx/issues/201)
-await new WakaQWorker(wakaq, ['node', '--loader', 'tsx', 'scripts/wakaqChild.ts']).start();
+await new WakaQWorker(wakaq, ['node', '--import', 'tsx', 'scripts/wakaqChild.ts']).start();
 ```
 
 `scripts/wakaqScheduler.ts`
