@@ -32,7 +32,7 @@ export interface WakaQParams {
   port?: number;
   db?: number;
   tls?: ConnectionOptions;
-  concurrency?: number;
+  concurrency?: string | number;
   excludeQueues?: string[];
   maxRetries?: number;
   softTimeout?: Duration | number;

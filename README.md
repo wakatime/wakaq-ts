@@ -45,9 +45,11 @@ export const wakaq = new WakaQ({
   */
   hardTimeout: Duration.minute(15),
 
-  /* Number of worker processes. Must be an int.
+  /* Number of worker processes. Must be an int or str which evaluates to an
+     int. The variable "cores" is replaced with the number of processors on
+     the current machine.
   */
-  concurrency: 2,
+  concurrency: 'cores*4',
 
   /* List your queues and their priorities.
   */
