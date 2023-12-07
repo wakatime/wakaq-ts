@@ -104,7 +104,7 @@ export class WakaQWorker {
 
   private _spawnChild() {
     const t = this;
-    this.logger.info(`spawning child worker: ${this.childWorkerCommand} ${this.childWorkerArgs.join(' ')}`);
+    this.logger.debug(`spawning child worker: ${this.childWorkerCommand} ${this.childWorkerArgs.join(' ')}`);
     const p = spawn(this.childWorkerCommand, this.childWorkerArgs, {
       stdio: [null, null, null, 'ipc'],
       // stdio: 'pipe',
