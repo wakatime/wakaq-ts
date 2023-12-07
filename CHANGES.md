@@ -1,5 +1,12 @@
 # CHANGES
 
+## 2.1.2 (2023-12-07) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.1...v2.1.2)
+
+#### Bugfix
+
+- Fix concurrency param type.
+- Fix proxying child worker log output.
+
 ## 2.1.1 (2023-11-25) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.0...v2.1.1)
 
 #### Bugfix
