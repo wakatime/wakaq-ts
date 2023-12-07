@@ -43,7 +43,7 @@ export class WakaQChildWorker {
           if (!task && payload.name) this.logger.error(`Task not found: ${payload.name}`);
           if (task) {
             const queue = this.wakaq.queuesByKey.get(queueBrokerKey);
-            this.wakaq.currentTask = task;
+            this.wakaq.currentTask = payload;
             const retry = payload.retry ?? 0;
             this.logger.debug(`working on task ${task.name}`);
 
@@ -137,7 +137,7 @@ export class WakaQChildWorker {
     }
 
     let retry = 0;
-    this.wakaq.currentTask = task;
+    this.wakaq.currentTask = payload;
     try {
       while (true) {
         try {

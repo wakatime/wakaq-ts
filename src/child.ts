@@ -11,6 +11,7 @@ export class Child {
   public softTimeout: Duration;
   public hardTimeout: Duration;
   public softTimeoutReached = false;
+  public outputBuffer = '';
 
   private _sigtermSent = false;
   private _sigquitSent = false;

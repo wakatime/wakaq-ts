@@ -14,17 +14,16 @@ export const setupLogging = (wakaq: WakaQ, isChild: boolean = false, isScheduler
     level: level,
     format: format.combine(
       format.errors({ stack: true }),
-      format.printf(({ level, message, stack }) => {
-        let msg = `${new Date().toISOString()} ${level}`;
-        const task = wakaq.currentTask;
-        if (task) {
-          msg = `${msg} in ${task.name}`;
+      format.printf(({ level, message, stack, payload }) => {
+        if (stack) message = `${message} - ${stack}`;
+        if (isChild) return JSON.stringify({ payload: wakaq.currentTask, level, message });
+        let prefix = `${new Date().toISOString()} ${level.toUpperCase()}`;
+        if (payload) {
+          if (payload?.name) {
+            prefix = `${prefix} in ${payload.name} args=${JSON.stringify(payload.args ?? [])} retry=${payload.retry ?? 0}`;
+          }
         }
-        msg = `${msg}: ${message}`;
-        if (stack) {
-          msg = `${msg} - ${stack}`;
-        }
-        return msg;
+        return `${prefix}: ${message}`;
       }),
     ),
   });

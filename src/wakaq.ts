@@ -83,7 +83,7 @@ export class WakaQ {
   public logger?: Logger;
   private _pubsub?: Redis;
 
-  public currentTask?: Task;
+  public currentTask?: any;
   public brokerKeys: string[];
 
   public afterWorkerStartedCallback?: () => Promise<void>;

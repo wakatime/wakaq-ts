@@ -178,10 +178,30 @@ export class WakaQWorker {
   }
 
   private _onOutputReceivedFromChild(child: Child, data: string | Buffer) {
-    this.logger.debug(`received output from child process ${child.process.pid}`);
     if (data instanceof Buffer) data = data.toString();
     if (!data) return;
-    console.log(data);
+    child.outputBuffer = `${child.outputBuffer}${data}`;
+    let i = -1;
+    while ((i = child.outputBuffer.indexOf('\n')) && i > -1) {
+      const payload = child.outputBuffer.slice(0, i);
+      child.outputBuffer = child.outputBuffer.slice(i + 1);
+      if (payload.length > 0) {
+        try {
+          const parsed = JSON.parse(payload) as {
+            level: string;
+            message: string;
+            payload?: { name?: string; args?: any[]; retry?: number };
+          };
+          if (parsed?.level) {
+            this.logger.log(parsed.level, parsed.message, { worker: child.process.pid, payload: parsed.payload });
+          } else {
+            this.logger.info(payload);
+          }
+        } catch (e) {
+          this.logger.info(payload);
+        }
+      }
+    }
   }
 
   private _onMessageReceivedFromChild(child: Child, message: unknown) {
