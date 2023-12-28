@@ -117,6 +117,7 @@ import { wakaq } from '../app.js';
 
 // Can't use tsx directly because it breaks IPC (https://github.com/esbuild-kit/tsx/issues/201)
 await new WakaQWorker(wakaq, ['node', '--import', 'tsx', 'scripts/wakaqChild.ts']).start();
+process.exit(0);
 ```
 
 `scripts/wakaqScheduler.ts`
@@ -126,6 +127,7 @@ import { WakaQScheduler } from 'wakaq';
 import { wakaq } from '../app.js';
 
 await new WakaQScheduler(wakaq).start();
+process.exit(0);
 ```
 
 `scripts/wakaqChild.ts`
@@ -138,6 +140,7 @@ import { wakaq } from '../app.js';
 // also make sure to enable tsc option verbatimModuleSyntax
 
 await new WakaQChildWorker(wakaq).start();
+process.exit(0);
 ```
 
 `scripts/wakaqInfo.ts`
