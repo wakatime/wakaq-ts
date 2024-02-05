@@ -64,7 +64,7 @@ export class WakaQScheduler {
             return next.milliseconds < prev.milliseconds ? next : prev;
           }, Duration.hour(24));
 
-        upcomingTasks = crons.filter((cron) => cron.duration.minutes < sleepDuration.minutes).map((cron) => cron.cronTask);
+        upcomingTasks = crons.filter((cron) => cron.duration.milliseconds <= sleepDuration.milliseconds).map((cron) => cron.cronTask);
 
         const sleepUntil = new Date(Date.now() + sleepDuration.milliseconds);
         this.logger.debug(`Sleeping for ${sleepDuration.minutes} minutes until ${sleepUntil.toISOString()}`)
