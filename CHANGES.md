@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.7 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.6...v2.1.7)
+
+#### Bugfix
+
+- Reset cron interval to current iteration time.
+
 ## 2.1.6 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.5...v2.1.6)
 
 #### Bugfix
