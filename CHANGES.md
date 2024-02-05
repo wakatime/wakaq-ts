@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.11 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.10...v2.1.11)
+
+#### Bugfix
+
+- Set context correctly when enqueuing tasks to run.
+
 ## 2.1.10 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.9...v2.1.10)
 
 #### Bugfix
