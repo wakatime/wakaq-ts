@@ -43,13 +43,13 @@ export class WakaQScheduler {
 
         await Promise.all(upcomingTasks.map(async (cronTask) => {
           const task = this.wakaq.tasks.get(cronTask.taskName);
-          if (task) {
-            const queue = cronTask.queue ?? task?.queue ?? this.wakaq.defaultQueue;
-
-            this.logger.debug(`run scheduled task on queue ${queue.name}: ${task.name}`);
-            await this.wakaq.enqueueAtFront(task.name, cronTask.args, queue);
+          if (!task) {
+            this.logger.warn(`task not found, maybe treeshaking removed it: ${cronTask.taskName}`);
           }
-        }, this));
+          const queue = cronTask.queue ?? task?.queue ?? this.wakaq.defaultQueue;
+          this.logger.debug(`run scheduled task on queue ${queue.name}: ${cronTask.taskName}`);
+          await this.wakaq.enqueueAtFront(cronTask.taskName, cronTask.args, queue);
+        }));
 
         const crons = this.wakaq.schedules.map((cronTask) => {
           cronTask.interval.reset(now);
