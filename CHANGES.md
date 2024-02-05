@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.8 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.7...v2.1.8)
+
+#### Bugfix
+
+- Always sleep into the future not the past.
+
 ## 2.1.7 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.6...v2.1.7)
 
 #### Bugfix
