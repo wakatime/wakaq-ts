@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.5 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.4...v2.1.5)
+
+#### Misc
+
+- More verbose scheduler logging.
+
 ## 2.1.4 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.3...v2.1.4)
 
 #### Bugfix
