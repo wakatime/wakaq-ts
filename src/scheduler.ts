@@ -27,7 +27,7 @@ export class WakaQScheduler {
     }
 
     this.wakaq.schedules.forEach((task) => {
-      this.logger.info(`scheduled task "${task.taskName}" with schedule ${task.schedule} and first runtime ${task.interval.next().toISOString()}`);
+      this.logger.info(`scheduled task "${task.taskName}" with schedule ${task.schedule}`);
     })
     this.logger.info('scheduler started');
 
@@ -51,7 +51,7 @@ export class WakaQScheduler {
         });
 
         const crons = this.wakaq.schedules.map((cronTask) => {
-          return { duration: Duration.second(Math.round(cronTask.interval.next().getTime() / 1000)), cronTask: cronTask };
+          return { duration: Duration.millisecond(Math.round(Date.now() - cronTask.interval.next().getTime())), cronTask: cronTask };
         });
 
         this.logger.debug(`Deciding how long to sleep from ${crons.length} tasks.`);
