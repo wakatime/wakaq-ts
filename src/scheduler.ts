@@ -41,15 +41,15 @@ export class WakaQScheduler {
         this.logger.debug(`Iteration at ${now.toISOString()}`);
         this.logger.debug(`Number upcoming tasks this iteration: ${upcomingTasks.length}`);
 
-        upcomingTasks.forEach((cronTask) => {
+        await Promise.all(upcomingTasks.map(async (cronTask) => {
           const task = this.wakaq.tasks.get(cronTask.taskName);
           if (task) {
             const queue = cronTask.queue ?? task?.queue ?? this.wakaq.defaultQueue;
 
             this.logger.debug(`run scheduled task on queue ${queue.name}: ${task.name}`);
-            this.wakaq.enqueueAtFront(task.name, cronTask.args, queue);
+            await this.wakaq.enqueueAtFront(task.name, cronTask.args, queue);
           }
-        });
+        }, this));
 
         const crons = this.wakaq.schedules.map((cronTask) => {
           cronTask.interval.reset(now);
