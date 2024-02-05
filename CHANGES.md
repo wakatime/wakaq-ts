@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.6 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.5...v2.1.6)
+
+#### Bugfix
+
+- Fix calculating sleep duration from next scheduled task.
+
 ## 2.1.5 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.4...v2.1.5)
 
 #### Misc
