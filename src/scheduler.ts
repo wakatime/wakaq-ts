@@ -61,13 +61,13 @@ export class WakaQScheduler {
           .map((cron) => cron.duration)
           .reduce((prev, next) => {
             this.logger.debug(`Comparing previous ${prev.milliseconds} to ${next.milliseconds}`);
-            return next.milliseconds < prev.milliseconds ? next : prev;
+            return Math.abs(next.milliseconds) < prev.milliseconds ? next : prev;
           }, Duration.hour(24));
 
-        upcomingTasks = crons.filter((cron) => cron.duration.minutes < sleepDuration.minutes).map((cron) => cron.cronTask);
+        upcomingTasks = crons.filter((cron) => cron.duration.minutes < Math.abs(sleepDuration.minutes)).map((cron) => cron.cronTask);
 
-        const sleepUntil = new Date(Date.now() + sleepDuration.milliseconds);
-        this.logger.debug(`Sleeping for ${sleepDuration.minutes} minutes until ${sleepUntil.toISOString()}`)
+        const sleepUntil = new Date(Date.now() + Math.abs(sleepDuration.milliseconds));
+        this.logger.debug(`Sleeping for ${Math.abs(sleepDuration.minutes)} minutes until ${sleepUntil.toISOString()}`)
 
         // sleep until the next scheduled task
         await this.wakaq.sleep(sleepDuration);
