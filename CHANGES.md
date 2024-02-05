@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.10 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.9...v2.1.10)
+
+#### Bugfix
+
+- Find scheduled tasks ready to run within or equal to next runtime.
+
 ## 2.1.9 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.8...v2.1.9)
 
 #### Bugfix
