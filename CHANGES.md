@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.9 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.8...v2.1.9)
+
+#### Bugfix
+
+- Fix arithmatic bug causing negative next cron interval time.
+
 ## 2.1.8 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.7...v2.1.8)
 
 #### Bugfix
