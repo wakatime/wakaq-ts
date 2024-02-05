@@ -37,7 +37,8 @@ export class WakaQScheduler {
       await this.wakaq.connect();
 
       while (true) {
-        this.logger.debug(`Iteration at ${(new Date()).toISOString()}`);
+        const now = new Date();
+        this.logger.debug(`Iteration at ${now.toISOString()}`);
         this.logger.debug(`Number upcoming tasks this iteration: ${upcomingTasks.length}`);
 
         upcomingTasks.forEach((cronTask) => {
@@ -51,7 +52,8 @@ export class WakaQScheduler {
         });
 
         const crons = this.wakaq.schedules.map((cronTask) => {
-          return { duration: Duration.millisecond(Math.round(Date.now() - cronTask.interval.next().getTime())), cronTask: cronTask };
+          cronTask.interval.reset(now);
+          return { duration: Duration.millisecond(now.getTime() - cronTask.interval.next().getTime()), cronTask: cronTask };
         });
 
         this.logger.debug(`Deciding how long to sleep from ${crons.length} tasks.`);
