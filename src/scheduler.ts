@@ -55,13 +55,13 @@ export class WakaQScheduler {
         });
         const sleepDuration = crons
           .map((cron) => cron.duration)
-          .reduce((current, next) => {
-            return next < current ? next : current;
+          .reduce((prev, next) => {
+            return next.milliseconds < prev.milliseconds ? next : prev;
           }, Duration.hour(24));
 
         upcomingTasks = crons.filter((cron) => cron.duration.minutes < sleepDuration.minutes).map((cron) => cron.cronTask);
 
-        const sleepUntil = new Date((Date.now() / 1000 + sleepDuration.minutes) * 1000);
+        const sleepUntil = new Date((Date.now() / 1000 + sleepDuration.seconds) * 1000);
         this.logger.debug(`Sleeping for ${sleepDuration.minutes} minutes until ${sleepUntil.toISOString()}`)
 
         // sleep until the next scheduled task
