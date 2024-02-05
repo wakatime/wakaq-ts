@@ -16,12 +16,21 @@ export class WakaQScheduler {
   }
 
   async start() {
-    this.logger.info('starting scheduler');
+    this.logger.info(`scheduler_log_file=${this.wakaq.schedulerLogFile}`);
+    this.logger.info(`scheduler_log_level=${this.wakaq.schedulerLogLevel}`);
+    this.logger.info(`num_scheduled_tasks=${this.wakaq.schedules.length}`);
+    this.logger.info(`scheduler_log_level=${this.wakaq.schedulerLogLevel}`);
+    this.logger.info(`default_queue=${this.wakaq.defaultQueue.name}`);
 
     if (this.wakaq.schedules.length == 0) {
       this.logger.error('no scheduled tasks found');
       throw new WakaQError('No scheduled tasks found.');
     }
+
+    this.wakaq.schedules.forEach((task) => {
+      this.logger.info(`scheduled task "${task.taskName}" with schedule ${task.interval.stringify}`);
+    })
+    this.logger.info('scheduler started');
 
     let upcomingTasks: CronTask[] = [];
 
@@ -29,6 +38,8 @@ export class WakaQScheduler {
       await this.wakaq.connect();
 
       while (true) {
+        this.logger.debug(`Number upcoming tasks this iteration: ${upcomingTasks.length}`);
+
         upcomingTasks.forEach((cronTask) => {
           const task = this.wakaq.tasks.get(cronTask.taskName);
           if (task) {
@@ -49,6 +60,9 @@ export class WakaQScheduler {
           }, Duration.hour(24));
 
         upcomingTasks = crons.filter((cron) => cron.duration.minutes < sleepDuration.minutes).map((cron) => cron.cronTask);
+
+        const sleepUntil = new Date((Date.now() / 1000 + sleepDuration.minutes) * 1000);
+        this.logger.debug(`Sleeping for ${sleepDuration.minutes} minutes until ${sleepUntil.toISOString()}`)
 
         // sleep until the next scheduled task
         await this.wakaq.sleep(sleepDuration);

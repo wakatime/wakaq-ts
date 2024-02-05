@@ -42,9 +42,7 @@ export class WakaQWorker {
     this.logger.info(`max_mem_percent=${this.wakaq.maxMemPercent}`);
     this.logger.info(`max_tasks_per_worker=${this.wakaq.maxTasksPerWorker}`);
     this.logger.info(`worker_log_file=${this.wakaq.workerLogFile}`);
-    this.logger.info(`scheduler_log_file=${this.wakaq.schedulerLogFile}`);
     this.logger.info(`worker_log_level=${this.wakaq.workerLogLevel}`);
-    this.logger.info(`scheduler_log_level=${this.wakaq.schedulerLogLevel}`);
     if (this.wakaq.singleProcess) {
       this.logger.info('running in single process mode...');
     } else {
