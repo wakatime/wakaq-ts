@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.1.12 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.11...v2.1.12)
+
+#### Bugfix
+
+- Always run scheduled tasks even if not found in wakaq task list.
+
 ## 2.1.11 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.10...v2.1.11)
 
 #### Bugfix
