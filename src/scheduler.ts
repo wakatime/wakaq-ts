@@ -28,7 +28,7 @@ export class WakaQScheduler {
     }
 
     this.wakaq.schedules.forEach((task) => {
-      this.logger.info(`scheduled task "${task.taskName}" with schedule ${task.interval.stringify}`);
+      this.logger.info(`scheduled task "${task.taskName}" with schedule ${task.interval.stringify()}`);
     })
     this.logger.info('scheduler started');
 
