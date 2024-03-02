@@ -11,9 +11,9 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "prepare": "npm run build",
-    "release:major": "npm version major && npm publish",
-    "release:minor": "npm version minor && npm publish",
-    "release:patch": "npm version patch && npm publish"
+    "release:major": "npm version major && npm publish && git push && git push --tags",
+    "release:minor": "npm version minor && npm publish && git push && git push --tags",
+    "release:patch": "npm version patch && npm publish && git push && git push --tags"
   },
   "repository": {
     "type": "git",
