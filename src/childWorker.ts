@@ -118,13 +118,13 @@ export class WakaQChildWorker {
   private async _executeTask(task: Task, args: any[], queue?: WakaQueue) {
     this._sendPingToParent(task.name, queue?.name);
     this.logger.debug(`running with args ${args}`);
-    if (this.wakaq.beforeTaskStartedCallback) this.wakaq.beforeTaskStartedCallback(task);
+    if (this.wakaq.beforeTaskStartedCallback) await this.wakaq.beforeTaskStartedCallback(task);
     try {
       await task.fn(...args);
     } finally {
       this._sendPingToParent();
       this._numTasksProcessed += 1;
-      if (this.wakaq.afterTaskFinishedCallback) this.wakaq.afterTaskFinishedCallback(task);
+      if (this.wakaq.afterTaskFinishedCallback) await this.wakaq.afterTaskFinishedCallback(task);
     }
   }
 
