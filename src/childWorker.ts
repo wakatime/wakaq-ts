@@ -1,5 +1,5 @@
 import { type Logger } from 'winston';
-import { SoftTimeout } from './exceptions.js';
+import { PreventTaskExecution, SoftTimeout } from './exceptions.js';
 import { setupLogging } from './logger.js';
 import { WakaQueue } from './queue.js';
 import { deserialize } from './serializer.js';
@@ -58,6 +58,8 @@ export class WakaQChildWorker {
                   this.logger.warning(error);
                   this.wakaq.enqueueAtEnd(task.name, payload.args, queue, retry);
                 }
+              } else if (error instanceof PreventTaskExecution) {
+                this.logger.debug(error);
               } else {
                 this.logger.error(error);
               }
@@ -153,6 +155,9 @@ export class WakaQChildWorker {
             } else {
               this.logger.warning(error);
             }
+          } else if (error instanceof PreventTaskExecution) {
+            this.logger.debug(error);
+            break;
           } else {
             this.logger.error(error);
             break;
