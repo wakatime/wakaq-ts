@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.2.1 (2024-03-02) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.2.0...v2.2.1)
+
+#### Bugfix
+
+- Await async wrapper functions.
+
 ## 2.2.0 (2024-03-02) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.12...v2.2.0)
 
 #### Feature
