@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.2.0 (2024-03-02) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.12...v2.2.0)
+
+#### Feature
+
+- Ability to prevent task execution from beforeTaskStartedCallback wrapper.
+
 ## 2.1.12 (2024-02-05) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.1.11...v2.1.12)
 
 #### Bugfix
