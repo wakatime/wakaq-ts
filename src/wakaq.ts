@@ -217,7 +217,11 @@ export class WakaQ {
   */
   public task(fn: (...arg0: unknown[]) => Promise<void>, params?: RegisterTaskParams): Task {
     const task = new Task(this, fn, params?.name, params?.queue, params?.softTimeout, params?.hardTimeout, params?.maxRetries);
-    if (this.tasks.has(task.name)) throw new WakaQError(`Duplicate task name: ${task.name}`);
+    if (this.tasks.has(task.name)) {
+      this.logger?.error(`Duplicate task name: ${task.name}`);
+      console.log(`Duplicate task name: ${task.name}`);
+      throw new WakaQError(`Duplicate task name: ${task.name}`);
+    }
     this.tasks.set(task.name, task);
     return task;
   }

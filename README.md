@@ -116,7 +116,7 @@ import { WakaQWorker } from 'wakaq';
 import { wakaq } from '../app.js';
 
 // Can't use tsx directly because it breaks IPC (https://github.com/esbuild-kit/tsx/issues/201)
-await new WakaQWorker(wakaq, ['node', '--import', 'tsx', 'scripts/wakaqChild.ts']).start();
+await new WakaQWorker(wakaq, ['node', '--no-warnings=ExperimentalWarning', '--import', 'tsx', 'scripts/wakaqChild.ts']).start();
 process.exit(0);
 ```
 
