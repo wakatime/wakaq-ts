@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.2.2 (2025-01-04) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.2.1...v2.2.2)
+
+#### Bugfix
+
+- Remove noisy debug log.
+
 ## 2.2.1 (2024-03-02) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.2.0...v2.2.1)
 
 #### Bugfix
