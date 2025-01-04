@@ -207,7 +207,6 @@ export class WakaQWorker {
     const payload = message as WakaQPing;
     if (payload.type !== 'wakaq-ping') return;
     child.lastPing = Math.round(Date.now() / 1000);
-    this.logger.debug(`received ping from child process ${child.process.pid}`);
     const taskName = payload.task;
     const task = taskName ? this.wakaq.tasks.get(taskName) : undefined;
     const queueName = payload.queue;
@@ -260,12 +259,10 @@ export class WakaQWorker {
         const now = Math.round(Date.now() / 1000);
         const runtime = Duration.second(now - child.lastPing);
         if (hardTimeout && runtime.seconds > hardTimeout.seconds) {
-          //this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached hard timeout, sending sigkill`);
-          this.logger.info(`child process ${child.process.pid} runtime ${runtime} reached hard timeout, sending sigkill`);
+          this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached hard timeout, sending sigkill`);
           child.sigkill();
         } else if (!child.softTimeoutReached && softTimeout && runtime.seconds > softTimeout.seconds) {
-          //this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached soft timeout, sending sigquit`);
-          this.logger.info(`child process ${child.process.pid} runtime ${runtime} reached soft timeout, sending sigquit`);
+          this.logger.debug(`child process ${child.process.pid} runtime ${runtime} reached soft timeout, sending sigquit`);
           child.softTimeoutReached = true;
           child.sigquit();
         }
