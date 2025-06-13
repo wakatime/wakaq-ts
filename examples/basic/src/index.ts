@@ -16,11 +16,14 @@ export const wakaq = new WakaQ({
 });
 
 export const exampleTask = wakaq.task(
-  async (name) => {
+  async (vars: { name: string; age: number }) => {
     wakaq.logger?.info('Task Started');
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    wakaq.logger?.info(`Hello, ${vars.name}. You are ${vars.age} years old.`);
+
     wakaq.logger?.info('Task Ended');
-    wakaq.logger?.info(`Hello, ${name}`);
   },
   { name: 'exampleTask' },
 );

@@ -215,14 +215,14 @@ export class WakaQ {
   Returns the new Task with methods enqueue(), enqueueAfterDelay,
   and broadcast().
   */
-  public task(fn: (...arg0: unknown[]) => Promise<void>, params?: RegisterTaskParams): Task {
+  public task<TData = unknown>(fn: (variables: TData) => Promise<void>, params?: RegisterTaskParams): Task<TData> {
     const task = new Task(this, fn, params?.name, params?.queue, params?.softTimeout, params?.hardTimeout, params?.maxRetries);
     if (this.tasks.has(task.name)) {
       this.logger?.error(`Duplicate task name: ${task.name}`);
       console.log(`Duplicate task name: ${task.name}`);
       throw new WakaQError(`Duplicate task name: ${task.name}`);
     }
-    this.tasks.set(task.name, task);
+    this.tasks.set(task.name, task as Task);
     return task;
   }
 
@@ -255,26 +255,26 @@ export class WakaQ {
     return Duration.second(def ?? 0);
   }
 
-  public async enqueueAtFront(taskName: string, args: any[], queue?: WakaQueue | string) {
+  public async enqueueAtFront(taskName: string, args: unknown, queue?: WakaQueue | string) {
     queue = this._queueOrDefault(queue);
     const payload = serialize({ name: taskName, args: args });
     await this.broker.lpush(queue.brokerKey, payload);
   }
 
-  public async enqueueWithEta(taskName: string, args: any[], eta: Date | Duration, queue?: WakaQueue | string) {
+  public async enqueueWithEta(taskName: string, args: unknown, eta: Date | Duration, queue?: WakaQueue | string) {
     queue = this._queueOrDefault(queue);
     const payload = serialize({ name: taskName, args: args });
     const timestamp = Math.round((eta instanceof Duration ? Date.now() + eta.milliseconds : eta.getTime()) / 1000);
     await this.broker.zadd(queue.brokerEtaKey, 'NX', String(timestamp), payload);
   }
 
-  public async enqueueAtEnd(taskName: string, args: any[], queue?: WakaQueue | string, retry = 0) {
+  public async enqueueAtEnd(taskName: string, args: unknown, queue?: WakaQueue | string, retry = 0) {
     queue = this._queueOrDefault(queue);
     const payload = serialize({ name: taskName, args: args, retry: retry });
     await this.broker.rpush(queue.brokerKey, payload);
   }
 
-  public async broadcast(taskName: string, args: any[]): Promise<number> {
+  public async broadcast(taskName: string, args: unknown): Promise<number> {
     const payload = serialize({ name: taskName, args: args });
     const pubsub = await this.pubsub();
     return await pubsub.publish(this.broadcastKey, payload);
