@@ -1,5 +1,11 @@
 # CHANGES
 
+## 2.3.0 (2025-06-14) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.2.2...v2.3.0)
+
+#### Feature
+
+- Generic type support for tasks.
+
 ## 2.2.2 (2025-01-04) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.2.1...v2.2.2)
 
 #### Bugfix
