@@ -1,0 +1,24 @@
+{
+  "name": "basic-example",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "worker": "tsx src/scripts/wakaqWorker.ts",
+    "scheduler": "tsx src/scripts/wakaqScheduler.ts",
+    "info": "tsx src/scripts/wakaqInfo.ts",
+    "purge": "tsx src/scripts/wakaqPurge.ts",
+    "run-task": "tsx src/scripts/runTask.ts"
+  },
+  "dependencies": {
+    "superjson": "^2.2.2",
+    "ts-duration": "^1.1.0",
+    "wakaq": "file:../..",
+    "zod": "^3.25.64"
+  },
+  "devDependencies": {
+    "dotenv": "^16.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

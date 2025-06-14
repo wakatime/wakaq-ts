@@ -2,10 +2,7 @@
 const config = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  extends: [
-    'plugin:@typescript-eslint/recommended-type-checked',
-    'plugin:@typescript-eslint/stylistic-type-checked',
-  ],
+  extends: ['plugin:@typescript-eslint/recommended-type-checked', 'plugin:@typescript-eslint/stylistic-type-checked'],
   rules: {
     quotes: ['error', 'single'],
     '@typescript-eslint/array-type': 'off',
@@ -19,6 +16,7 @@ const config = {
     ],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
+  ignorePatterns: ['./example/**'],
 };
 
 module.exports = config;

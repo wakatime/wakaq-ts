@@ -3,9 +3,9 @@ import { WakaQError } from './exceptions.js';
 import { WakaQueue } from './queue.js';
 import { WakaQ } from './wakaq.js';
 
-export class Task {
+export class Task<TData = unknown> {
   public name: string;
-  public fn: (...args: unknown[]) => Promise<void>;
+  public fn: (variables: TData) => Promise<void>;
   public wakaq: WakaQ;
   public queue?: WakaQueue;
   public softTimeout?: Duration;
@@ -14,7 +14,7 @@ export class Task {
 
   constructor(
     wakaq: WakaQ,
-    fn: (...args: unknown[]) => Promise<void>,
+    fn: (variables: TData) => Promise<void>,
     name?: string,
     queue?: WakaQueue | string,
     softTimeout?: Duration,
@@ -42,8 +42,8 @@ export class Task {
   /*
   Run task in the background.
   */
-  public async enqueue(...args: any[]) {
-    return await this.wakaq.enqueueAtEnd(this.name, args, this.queue);
+  public async enqueue(variables: TData) {
+    return await this.wakaq.enqueueAtEnd(this.name, variables, this.queue);
   }
 
   /*
