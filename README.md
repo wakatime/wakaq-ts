@@ -8,6 +8,7 @@ For the original Python version, see [WakaQ for Python][wakaq python].
 
 ## Features
 
+- TypeScript support for task params
 - Queue priority
 - Delayed tasks (run tasks after a duration eta)
 - Scheduled periodic tasks
@@ -30,8 +31,7 @@ Want more features like rate limiting, task deduplication, etc? Too bad, feature
 ```TypeScript
 import { Duration } from 'ts-duration';
 import { CronTask, WakaQ, WakaQueue, WakaQWorker } from 'wakaq';
-import { z } from 'zod';
-import { prisma } from './db';
+import { db } from './drizzle';
 
 export const wakaq = new WakaQ({
 
@@ -80,13 +80,9 @@ export const wakaq = new WakaQ({
 });
 
 export const createUserInBackground = wakaq.task(
-  async (firstName: string) => {
-    const name = z.string().safeParse(firstName);
-    if (!result.success) {
-      throw new Error(result.error.message);
-    }
-    await prisma.User.create({
-      data: { firstName: result.data },
+  async (params: {firstName: string}) => {
+    await db.insert(User).values({
+      firstName: params.firstName,
     });
   },
   { name: 'createUserInBackground' },
@@ -172,7 +168,7 @@ console.log(`Purged ${count} tasks from ${queue.name}`);
 wakaq.disconnect();
 ```
 
-After running `npm run worker` when you run `createUserInBackground.enqueue('alan')` your task executes in the background on the worker server.
+After running `npm run worker` when you run `createUserInBackground.enqueue({firstName: 'alan'})` your task executes in the background on the worker server.
 
 ## Deploying
 
