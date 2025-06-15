@@ -1,5 +1,11 @@
 # CHANGES
 
+## 3.0.1 (2025-06-15) [commits](https://github.com/wakatime/wakaq-ts/compare/v3.0.0...v3.0.1)
+
+#### Bugfix
+
+- Allow required or optional task params.
+
 ## 3.0.0 (2025-06-15) [commits](https://github.com/wakatime/wakaq-ts/compare/v2.3.0...v3.0.0)
 
 #### Breaking
