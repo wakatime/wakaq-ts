@@ -215,7 +215,10 @@ export class WakaQ {
   Returns the new Task with methods enqueue(), enqueueAfterDelay,
   and broadcast().
   */
-  public task<TData = unknown>(fn: (variables?: TData) => Promise<void>, params?: RegisterTaskParams): Task<TData> {
+  public task<TData = unknown>(
+    fn: ((variables: TData) => Promise<void>) | ((variables?: TData) => Promise<void>),
+    params?: RegisterTaskParams,
+  ): Task<TData> {
     const task = new Task(this, fn, params?.name, params?.queue, params?.softTimeout, params?.hardTimeout, params?.maxRetries);
     if (this.tasks.has(task.name)) {
       this.logger?.error(`Duplicate task name: ${task.name}`);
