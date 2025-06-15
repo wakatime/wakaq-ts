@@ -1,6 +1,6 @@
 {
   "name": "wakaq",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Background task queue for Node backed by Redis, a super minimal Celery",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
