@@ -42,14 +42,14 @@ export class Task<TData = unknown> {
   /*
   Run task in the background.
   */
-  public async enqueue(variables: TData) {
+  public async enqueue(variables?: TData) {
     return await this.wakaq.enqueueAtEnd(this.name, variables, this.queue);
   }
 
   /*
   Run task in the background after eta.
   */
-  public async enqueueAfterDelay(eta: Duration | Date | number, variables: TData) {
+  public async enqueueAfterDelay(eta: Duration | Date | number, variables?: TData) {
     const etaVerified = typeof eta === 'number' ? Duration.second(eta) : eta;
     return await this.wakaq.enqueueWithEta(this.name, variables, etaVerified, this.queue);
   }
@@ -60,7 +60,7 @@ export class Task<TData = unknown> {
   Only runs the task once per worker parent daemon, no matter the worker's concurrency.
   Returns the number of workers the task was sent to.
   */
-  public async broadcast(variables: TData): Promise<number> {
+  public async broadcast(variables?: TData): Promise<number> {
     return await this.wakaq.broadcast(this.name, variables);
   }
 }
