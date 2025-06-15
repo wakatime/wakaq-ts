@@ -291,7 +291,7 @@ export class WakaQWorker {
     }
   }
 
-  private async _executeTask(task: Task, variables: unknown, queue?: WakaQueue) {
+  private async _executeTask(task: Task, variables?: unknown, queue?: WakaQueue) {
     this.logger.debug(`running with args ${variables}`);
     if (this.wakaq.beforeTaskStartedCallback) this.wakaq.beforeTaskStartedCallback(task);
     try {

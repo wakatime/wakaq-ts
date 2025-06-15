@@ -115,7 +115,7 @@ export class WakaQChildWorker {
     }
   }
 
-  private async _executeTask(task: Task, variables: unknown, queue?: WakaQueue) {
+  private async _executeTask(task: Task, variables?: unknown, queue?: WakaQueue) {
     this._sendPingToParent(task.name, queue?.name);
     this.logger.debug(`running with args ${variables}`);
     if (this.wakaq.beforeTaskStartedCallback) await this.wakaq.beforeTaskStartedCallback(task);
