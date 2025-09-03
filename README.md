@@ -22,7 +22,7 @@ Want more features like rate limiting, task deduplication, etc? Too bad, feature
 
 ## Installing
 
-    npm i --save wakaq
+    npm install wakaq
 
 ## Using
 
