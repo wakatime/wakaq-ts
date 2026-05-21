@@ -27,6 +27,14 @@ Enqueue a task from a Python service and run it on a Node worker, or the
 reverse. One Redis instance, one set of queues, two languages. No other task
 queue in the comparison below can do this.
 
+**Type-safe task params.** Your task handler's parameter type is the single
+source of truth. `enqueue()` is checked against it at compile time, so sending
+a wrong-shaped or wrong-typed payload is a TypeScript error in your editor —
+not a runtime crash on the worker. Most queues type the producer and consumer
+separately and trust you to keep them in sync; WakaQ-TS ties them together. This
+is an advantage unique to wakaq-ts — the Python `wakaq` can't catch these
+mistakes before runtime.
+
 **Production-proven.** WakaQ has powered background processing at
 [wonderful.dev](https://wonderful.dev) for many years. It isn't a proof of concept,
 it runs real workloads every day.
@@ -43,13 +51,13 @@ retries — all in a surface area small enough to keep in your head.
 
 | # | Library | License | Broker(s) | Notes |
 |---|---------|---------|-----------|-------|
-| 1 | BullMQ | MIT | Redis | De facto standard. Flows, rate limiting, repeatable jobs. |
-| 2 | pg-boss | MIT | Postgres | Best option for transactional enqueue with no Redis. |
-| 3 | Graphile Worker | MIT | Postgres | High-throughput, `LISTEN/NOTIFY`-driven low latency. |
-| 4 | WakaQ-TS | BSD-3 | Redis | Lightweight cron/scheduled, ETA, broadcast tasks, soft/hard timeouts, retries. Polyglot with `wakaq`. |
-| 5 | Bee-Queue | MIT | Redis | Simple and fast for short, latency-sensitive jobs. |
-| 6 | Agenda | MIT | MongoDB | Reasonable if already on MongoDB; uneven maintenance. |
-| 7 | Bull (legacy) | MIT | Redis | Superseded by BullMQ — don't start new projects on it. |
+| 1 | BullMQ | MIT | Redis | De facto standard. Flows, rate limiting, repeatable jobs. Job data typed via generics, but producer and consumer are typed separately. |
+| 2 | pg-boss | MIT | Postgres | Best option for transactional enqueue with no Redis. Payloads aren't type-checked against the worker's expected params. |
+| 3 | Graphile Worker | MIT | Postgres | High-throughput, `LISTEN/NOTIFY`-driven low latency. Task payloads are untyped (`unknown`). |
+| 4 | WakaQ-TS | BSD-3 | Redis | Lightweight cron/scheduled, ETA, broadcast tasks, soft/hard timeouts, retries. Task params are type-checked end-to-end from `enqueue()` to handler. Polyglot with `wakaq`. |
+| 5 | Bee-Queue | MIT | Redis | Simple and fast for short, latency-sensitive jobs. Job data defaults to `any`. |
+| 6 | Agenda | MIT | MongoDB | Reasonable if already on MongoDB; uneven maintenance. Job-data generics exist but aren't enforced between `define` and enqueue. |
+| 7 | Bull (legacy) | MIT | Redis | Superseded by BullMQ — don't start new projects on it. Same loosely-typed job data. |
 
 ### Python
 
